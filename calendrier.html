@@ -157,6 +157,13 @@
     body.lang-en .fr-text { display: none !important; }
     body.lang-en .en-text { display: revert !important; }
 
+    /* ── LOADING / ERROR STATES ── */
+    .schedule-state { text-align: center; padding: 48px 24px; color: var(--gray); }
+    .schedule-state p { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 14px; }
+    .schedule-state .err-detail { font-family: 'Barlow', sans-serif; font-size: 12px; letter-spacing: 0; text-transform: none; opacity: 0.6; margin-top: 4px; font-weight: 400; }
+    .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid var(--gray-light); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* ── LARGE SCREENS 1400px+ ── */
     @media (min-width: 1400px) {
       .header-inner { padding: 24px 48px 20px; }
@@ -260,17 +267,17 @@
   <div class="page-header">
     <h1 class="fr-text">Calendrier <span>des matchs</span></h1>
     <h1 class="en-text">Game <span>Schedule</span></h1>
-    <p class="page-header-sub fr-text">Saison Régulière 2026 · Source : LBJEQ / PointStreak</p>
-    <p class="page-header-sub en-text">2026 Regular Season · Source: LBJEQ / PointStreak</p>
+    <p class="page-header-sub fr-text">Saison Régulière 2026 · Source : LBJEQ via Spordle</p>
+    <p class="page-header-sub en-text">2026 Regular Season · Source: LBJEQ via Spordle</p>
   </div>
 
   <div class="schedule-wrap">
 
     <div class="panel-toolbar">
-      <a href="https://lbjeq.bbstats.pointstreak.com/fr/team_schedule.html?teamid=69248&seasonid=34320"
+      <a href="https://page.spordle.com/diamants-de-quebec/teams/156484?tab=schedule"
          target="_blank" rel="noopener" class="source-link">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-        <span class="fr-text">Voir sur PointStreak</span><span class="en-text">View on PointStreak</span>
+        <span class="fr-text">Voir sur Spordle</span><span class="en-text">View on Spordle</span>
       </a>
     </div>
 
@@ -304,200 +311,208 @@
     </div>
     <div class="footer-bottom">
       <p>&copy; 2026 Diamants de Québec &mdash; <span class="fr-text">Tous droits réservés.</span><span class="en-text">All rights reserved.</span></p>
-      <p class="fr-text">Données : LBJEQ / PointStreak · Logos : Spordle</p>
-      <p class="en-text">Data: LBJEQ / PointStreak · Logos: Spordle</p>
+      <p class="fr-text">Données : LBJEQ via Spordle · Logos : Spordle</p>
+      <p class="en-text">Data: LBJEQ via Spordle · Logos: Spordle</p>
     </div>
   </footer>
 
   <script>
-    // ── LOGO MAP ──────────────────────────────────────────────────────────────
-    const LOGOS = {
-      CH:  'https://d1omh11ncsvj0s.cloudfront.net/teams/1ede0a46-1d60-6c7e-9485-06d601f3edb2/logos/1ede0a46-1d44-66e6-a8c4-06d601f3edb2.jpg',
-      TR:  'https://d1omh11ncsvj0s.cloudfront.net/teams/1ede0aa1-2605-6518-a672-0e01086684f6/logos/1ede0aa1-25c9-62e8-8559-0e01086684f6.png',
-      JQ:  'https://d1omh11ncsvj0s.cloudfront.net/teams/1ede0a93-14b0-6fd2-ac76-06d601f3edb2/logos/1ede0a93-1496-634e-a61e-06d601f3edb2.png',
-      GA:  'https://d1omh11ncsvj0s.cloudfront.net/teams/1ede0a67-6a99-6fec-802e-0e01086684f6/logos/1ede0a67-6a69-696e-93bc-0e01086684f6.png',
-      CO:  'https://d1omh11ncsvj0s.cloudfront.net/organizations/1edafc6f-b2a8-68dc-b0ed-02ac0c1f3f60/logos/1edafc6f-b2af-6f4c-96af-02ac0c1f3f60.png',
-      MTL: 'https://d1omh11ncsvj0s.cloudfront.net/teams/1eed580e-aff8-6daa-ae05-023a08e3ca6c/logos/1eed580e-afad-6e36-a94e-023a08e3ca6c.png',
-      LV:  'https://d1omh11ncsvj0s.cloudfront.net/organizations/1edafc6f-acce-6812-bf7e-02ac0c1f3f60/logos/1edafc6f-acd7-687c-b917-02ac0c1f3f60.png',
-      LO:  'https://d1omh11ncsvj0s.cloudfront.net/teams/1efdfde5-90ca-6928-9af7-0e84eb09d6ad/logos/1efdfde5-9075-6734-aade-0e84eb09d6ad.jpg',
-      LS:  'https://d1omh11ncsvj0s.cloudfront.net/teams/1eed5805-3347-6058-971e-023a08e3ca6c/logos/1eed5805-3321-6682-abd5-023a08e3ca6c.png',
-      RE:  'https://d1omh11ncsvj0s.cloudfront.net/teams/1ede0a8b-0ca6-652e-aa91-06d601f3edb2/logos/1ede0a8b-0c8f-6040-9e2a-06d601f3edb2.png',
-      SE:  'https://d1omh11ncsvj0s.cloudfront.net/teams/1ede0a9b-3ac7-6b5a-b06d-06d601f3edb2/logos/1ede0a9b-3aaa-6db6-9752-06d601f3edb2.png',
-      GR:  'https://d1omh11ncsvj0s.cloudfront.net/teams/1ede0a60-87f6-6448-9e16-0e01086684f6/logos/1ede0a60-87b4-6412-bc4e-0e01086684f6.png',
+    // ── CONFIG ────────────────────────────────────────────────────────────────
+    const SPORDLE_PROXY = 'https://spordle-proxy.chisholm2000.workers.dev';
+    const OFFICE_ID     = 3578;    // LBJEQ (Ligue de Baseball Junior Élite du Québec)
+    const TEAM_ID       = 156484;  // Diamants de Québec
+    const OUR_TEAM_NAME = 'Diamants';
+
+    // Spordle returns LONG ALL-CAPS team names. Map to clean display labels.
+    const OPPONENT_LABELS = {
+      156483: 'Charlesbourg',
+      156493: 'Trois-Rivières',
+      156492: 'LaSalle',
+      156491: 'Granby',
+      156490: 'Longueuil',
+      156489: 'Repentigny',
+      156488: 'Montréal',
+      156487: 'Coaticook',
+      156486: 'Gatineau',
+      156485: 'St-Eustache',
+      156482: 'Laval',
+      167063: 'Jonquière',
+      167077: '16U',
     };
-
-    // ── MONTH LABELS ─────────────────────────────────────────────────────────
-    const MONTH_LABELS = {
-      'Mai': { fr: 'Mai 2026',     en: 'May 2026'    },
-      'Jun': { fr: 'Juin 2026',    en: 'June 2026'   },
-      'Jul': { fr: 'Juillet 2026', en: 'July 2026'   },
-      'Aoû': { fr: 'Août 2026',    en: 'August 2026' },
-    };
-
-    // ── SCHEDULE DATA ─────────────────────────────────────────────────────────
-    // [day, dayFr, dayEn, monthFr, monthEn, isHome, opp, oppKey, venue, time, division, gameNum, dh]
-    const SCHEDULE = [
-      // MAI
-      ['15','Ven','Fri','Mai','May', true, 'Charlesbourg','CH','Stade Canac','19h30','Est','001',null],
-      ['19','Mar','Tue','Mai','May', false,'Charlesbourg','CH','Henri Casault','19h30','Est','016',null],
-      ['20','Mer','Wed','Mai','May', true, 'Trois-Rivières','TR','Stade Canac','19h30','Est','018',null],
-      ['21','Jeu','Thu','Mai','May', false,'Trois-Rivières','TR','Stade de T-R','19h30','Est','022',null],
-      ['23','Sam','Sat','Mai','May', true, 'Gatineau','GA','Stade Canac','16h00','Ouest/Est','025','1'],
-      ['23','Sam','Sat','Mai','May', true, 'Gatineau','GA','Stade Canac','19h00','Ouest/Est','029','2'],
-      ['24','Dim','Sun','Mai','May', true, 'Coaticook','CO','Stade Canac','13h00','Centre/Est','034','1'],
-      ['24','Dim','Sun','Mai','May', true, 'Coaticook','CO','Stade Canac','16h00','Centre/Est','036','2'],
-      ['30','Sam','Sat','Mai','May', true, 'Montréal','MTL','Stade Canac','16h00','Ouest/Est','059','1'],
-      ['30','Sam','Sat','Mai','May', true, 'Montréal','MTL','Stade Canac','19h00','Ouest/Est','061','2'],
-      ['31','Dim','Sun','Mai','May', true, 'Laval','LV','Stade Canac','13h00','Ouest/Est','052','1'],
-      ['31','Dim','Sun','Mai','May', true, 'Laval','LV','Stade Canac','16h00','Ouest/Est','057','2'],
-      // JUIN
-      ['3','Mer','Wed','Jun','Jun', false,'Jonquière','JQ','R. Desmeules','19h30','Est','068',null],
-      ['4','Jeu','Thu','Jun','Jun', false,'Charlesbourg','CH','Henri Casault','19h30','Est','072',null],
-      ['9','Mar','Tue','Jun','Jun', true, 'Charlesbourg','CH','Stade Canac','19h30','Est','088',null],
-      ['10','Mer','Wed','Jun','Jun', false,'Jonquière','JQ','R. Desmeules','19h30','Est','092',null],
-      ['11','Jeu','Thu','Jun','Jun', true, 'Jonquière','JQ','Stade Canac','19h30','Est','096',null],
-      ['15','Lun','Mon','Jun','Jun', false,'Trois-Rivières','TR','Stade de T-R','19h30','Est','111',null],
-      ['20','Sam','Sat','Jun','Jun', true, 'St-Eustache','SE','Stade Canac','16h00','Ouest/Est','125','1'],
-      ['20','Sam','Sat','Jun','Jun', true, 'St-Eustache','SE','Stade Canac','19h00','Ouest/Est','128','2'],
-      ['21','Dim','Sun','Jun','Jun', true, 'Repentigny','RE','Stade Canac','13h00','Ouest/Est','132','1'],
-      ['21','Dim','Sun','Jun','Jun', true, 'Repentigny','RE','Stade Canac','16h00','Ouest/Est','136','2'],
-      ['23','Mar','Tue','Jun','Jun', false,'Charlesbourg','CH','Henri Casault','19h30','Est','143',null],
-      ['24','Mer','Wed','Jun','Jun', false,'Jonquière','JQ','R. Desmeules','19h30','Est','196',null],
-      ['27','Sam','Sat','Jun','Jun', false,'Longueuil','LO','Paul Pratt','16h00','Est/Centre','155','1'],
-      ['27','Sam','Sat','Jun','Jun', false,'Longueuil','LO','Paul Pratt','19h00','Est/Centre','158','2'],
-      ['28','Dim','Sun','Jun','Jun', false,'LaSalle','LS','Stade Éloi Viau','14h00','Est/Centre','205','1'],
-      ['28','Dim','Sun','Jun','Jun', false,'LaSalle','LS','Stade Éloi Viau','17h00','Est/Centre','208','2'],
-      // JUILLET
-      ['1','Mer','Wed','Jul','Jul', true, 'Jonquière','JQ','Stade Canac','19h30','Est','169',null],
-      ['6','Lun','Mon','Jul','Jul', false,'Trois-Rivières','TR','Stade de T-R','19h30','Est','295',null],
-      ['9','Jeu','Thu','Jul','Jul', false,'Charlesbourg','CH','Henri Casault','19h30','Est','200',null],
-      ['13','Lun','Mon','Jul','Jul', false,'Trois-Rivières','TR','Stade de T-R','19h30','Est','215',null],
-      ['14','Mar','Tue','Jul','Jul', true, 'Trois-Rivières','TR','Stade Canac','19h30','Est','216',null],
-      ['15','Mer','Wed','Jul','Jul', true, 'Jonquière','JQ','Stade Canac','19h30','Est','219',null],
-      ['16','Jeu','Thu','Jul','Jul', true, 'Charlesbourg','CH','Stade Canac','19h30','Est','225',null],
-      ['19','Dim','Sun','Jul','Jul', false,'Granby','GR','N. Fontaine','14h00','Est/Centre','235','1'],
-      ['19','Dim','Sun','Jul','Jul', false,'Granby','GR','N. Fontaine','17h00','Est/Centre','237','2'],
-      ['21','Mar','Tue','Jul','Jul', true, 'Charlesbourg','CH','Stade Canac','19h30','Est','239',null],
-      ['22','Mer','Wed','Jul','Jul', true, 'Trois-Rivières','TR','Stade Canac','19h30','Est','243',null],
-      ['23','Jeu','Thu','Jul','Jul', true, 'Jonquière','JQ','Stade Canac','19h30','Est','248',null],
-      ['27','Lun','Mon','Jul','Jul', false,'Trois-Rivières','TR','Stade de T-R','19h30','Est','262',null],
-      ['29','Mer','Wed','Jul','Jul', true, 'Trois-Rivières','TR','Stade Canac','19h30','Est','268',null],
-      ['30','Jeu','Thu','Jul','Jul', true, 'Charlesbourg','CH','Stade Canac','19h30','Est','271',null],
-      // AOÛT
-      ['2','Dim','Sun','Aoû','Aug', true, '16U','CH','Henri Casault','14h00','Sud/Est','286',null],
-      ['3','Lun','Mon','Aoû','Aug', false,'Trois-Rivières','TR','Stade de T-R','19h30','Est','290',null],
-      ['4','Mar','Tue','Aoû','Aug', false,'Jonquière','JQ','R. Desmeules','19h30','Est','292',null],
-      ['5','Mer','Wed','Aoû','Aug', true, 'Trois-Rivières','TR','Stade Canac','19h30','Est','298',null],
-      ['6','Jeu','Thu','Aoû','Aug', false,'Charlesbourg','CH','Henri Casault','19h30','Est','303',null],
-      ['12','Mer','Wed','Aoû','Aug', false,'Jonquière','JQ','R. Desmeules','19h30','Est','319',null],
-    ];
-
-    // ── MONTH → FULL DATE for localStorage (year 2026 hardcoded for this season) ──
-    const MONTH_TO_NUM = { Mai: 4, Jun: 5, Jul: 6, Aoû: 7 }; // 0-indexed months
-
-    // ── CONVERT SCHEDULE TO STRUCTURED OBJECTS & CACHE IN LOCALSTORAGE ──────
-    // This powers diffusion.html and index.html without them needing to fetch anything.
-    function buildStructuredSchedule() {
-      return SCHEDULE.map(g => {
-        const [day, dayFr, dayEn, mFr, mEn, isHome, opp, oppKey, venue, time, div, num, dh] = g;
-        const mo    = MONTH_TO_NUM[mFr];
-        const d     = new Date(2026, mo, parseInt(day));
-        // Parse time string like "19h30" → hours/minutes
-        const timeParts = time.match(/(\d+)h(\d+)/);
-        if (timeParts) {
-          d.setHours(parseInt(timeParts[1]), parseInt(timeParts[2]), 0, 0);
-        }
-        return {
-          date:    d.toISOString(),
-          day, dayFr, dayEn, mFr, mEn,
-          isHome, opp, oppKey,
-          venue, time, div, num, dh,
-          logoUrl: LOGOS[oppKey] || null,
-        };
-      });
+    function oppLabel(team) {
+      if (!team) return '?';
+      return OPPONENT_LABELS[team.id] || team.shortName || team.name;
     }
 
-    function writeScheduleCache() {
+    // ── LOCALE ───────────────────────────────────────────────────────────────
+    const FR_MONTHS       = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+    const EN_MONTHS       = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const FR_MONTHS_SHORT = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+    const EN_MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const FR_DAYS         = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+    const EN_DAYS         = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+    // ── FETCH (live Spordle via shared proxy Worker) ─────────────────────────
+    async function fetchSchedule() {
+      const url = `${SPORDLE_PROXY}?officeId=${OFFICE_ID}&teamId=${TEAM_ID}`;
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      if (!Array.isArray(data)) throw new Error('Unexpected payload from proxy');
+      return data.sort((a,b) => new Date(a.startTime) - new Date(b.startTime));
+    }
+
+    // ── NORMALIZE Spordle game → structured object ───────────────────────────
+    function normalize(games) {
+      const out = games.map(g => {
+        const d        = new Date(g.startTime);
+        const isHome   = g.homeTeamId === TEAM_ID;
+        const oppTeam  = isHome ? g.awayTeam : g.homeTeam;
+        const teamStat = (g.teamStats || []).find(t => t.teamId === TEAM_ID);
+        return {
+          id:           g.id,
+          number:       g.number,
+          date:         d.toISOString(),
+          year:         d.getFullYear(),
+          month:        d.getMonth(),
+          day:          d.getDate(),
+          weekday:      d.getDay(),
+          hours:        d.getHours(),
+          minutes:      d.getMinutes(),
+          timeFr:       d.getHours() + 'h' + String(d.getMinutes()).padStart(2,'0'),
+          timeEn:       d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+          isHome,
+          opp:          oppLabel(oppTeam),
+          oppId:        oppTeam ? oppTeam.id : null,
+          oppLogoUrl:   oppTeam ? oppTeam.logoUrl : null,
+          venue:        (g.surface && g.surface.venue) ? g.surface.venue.name : '',
+          ourScore:     g.score && oppTeam ? g.score[TEAM_ID] ?? null : null,
+          oppScore:     g.score && oppTeam ? g.score[oppTeam.id] ?? null : null,
+          result:       teamStat ? teamStat.gameResult : null,  // "win" | "loss" | null
+          status:       (g.status || '').toLowerCase(),
+          isLive:       !!g.isLive,
+          dh:           null,
+        };
+      });
+
+      // Doubleheader detection: same day + same opponent → assign dh = '1', '2'
+      const groups = {};
+      out.forEach(x => {
+        const key = `${x.year}-${x.month}-${x.day}-${x.oppId}`;
+        (groups[key] = groups[key] || []).push(x);
+      });
+      Object.values(groups).forEach(arr => {
+        if (arr.length > 1) {
+          arr.sort((a,b) => (a.hours*60+a.minutes) - (b.hours*60+b.minutes));
+          arr.forEach((x, i) => { x.dh = String(i + 1); });
+        }
+      });
+
+      return out;
+    }
+
+    // ── localStorage cache (powers diffusion.html + index.html sidebar) ──────
+    function writeCache(games) {
       try {
-        const structured = buildStructuredSchedule();
-        const payload = JSON.stringify({ ts: Date.now(), games: structured });
-        localStorage.setItem('diamants_schedule', payload);
+        localStorage.setItem('diamants_schedule', JSON.stringify({ ts: Date.now(), games }));
       } catch(e) { /* storage unavailable */ }
     }
 
-    // ── BUILD & RENDER SCHEDULE ───────────────────────────────────────────────
-    function buildSchedule() {
+    // ── RENDER ───────────────────────────────────────────────────────────────
+    function render(games) {
       const wrap = document.getElementById('schedule-content');
-      let currentMonth = null;
-      let monthDiv = null;
-      let listDiv  = null;
+      wrap.innerHTML = '';
+      if (!games.length) {
+        wrap.innerHTML = '<div class="schedule-state"><p class="fr-text">Aucun match disponible pour cette saison.</p><p class="en-text">No games available for this season.</p></div>';
+        return;
+      }
 
-      SCHEDULE.forEach(g => {
-        const [day, dayFr, dayEn, mFr, mEn, isHome, opp, oppKey, venue, time, div, num, dh] = g;
+      let currentMonthKey = null;
+      let listDiv = null;
 
-        if (mFr !== currentMonth) {
-          currentMonth = mFr;
-          monthDiv = document.createElement('div');
+      games.forEach(g => {
+        const monthKey = `${g.year}-${g.month}`;
+        if (monthKey !== currentMonthKey) {
+          currentMonthKey = monthKey;
+          const monthDiv = document.createElement('div');
           monthDiv.className = 'month-group';
-          const lbl = MONTH_LABELS[mFr];
-          monthDiv.innerHTML = `<div class="month-heading fr-text">${lbl.fr}</div><div class="month-heading en-text">${lbl.en}</div>`;
+          monthDiv.innerHTML = `<div class="month-heading fr-text">${FR_MONTHS[g.month]} ${g.year}</div><div class="month-heading en-text">${EN_MONTHS[g.month]} ${g.year}</div>`;
           listDiv = document.createElement('div');
           listDiv.className = 'game-list';
           monthDiv.appendChild(listDiv);
           wrap.appendChild(monthDiv);
         }
 
-        const logoSrc  = LOGOS[oppKey] || '';
-        const dhBadge  = dh
-          ? `<span class="badge badge-dh fr-text">DH — ${dh === '1' ? '1re' : '2e'}</span><span class="badge badge-dh en-text">DH — G${dh}</span>`
-          : '';
-
         const item = document.createElement('div');
-        item.className = `game-item ${isHome ? 'home' : 'away'}`;
+        item.className = `game-item ${g.isHome ? 'home' : 'away'}`;
+        const oppInitials = (g.opp || '?').replace(/[^A-Za-zÀ-ÿ]/g, '').slice(0, 3).toUpperCase();
+        const dhFr = g.dh ? `<span class="badge badge-dh fr-text">DH — ${g.dh === '1' ? '1re' : '2e'}</span>` : '';
+        const dhEn = g.dh ? `<span class="badge badge-dh en-text">DH — G${g.dh}</span>` : '';
+
         item.innerHTML = `
           <div class="game-date-block">
-            <div class="day-num">${day}</div>
-            <div class="day-name fr-text">${dayFr}</div>
-            <div class="day-name en-text">${dayEn}</div>
-            <div class="day-month fr-text">${mFr}</div>
-            <div class="day-month en-text">${mEn}</div>
-            <div class="day-time">${time}</div>
+            <div class="day-num">${g.day}</div>
+            <div class="day-name fr-text">${FR_DAYS[g.weekday]}</div>
+            <div class="day-name en-text">${EN_DAYS[g.weekday]}</div>
+            <div class="day-month fr-text">${FR_MONTHS_SHORT[g.month]}</div>
+            <div class="day-month en-text">${EN_MONTHS_SHORT[g.month]}</div>
+            <div class="day-time fr-text">${g.timeFr}</div>
+            <div class="day-time en-text">${g.timeEn}</div>
           </div>
           <div class="opp-logo-wrap">
-            ${logoSrc
-              ? `<img src="${logoSrc}" alt="${opp}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            ${g.oppLogoUrl
+              ? `<img src="${g.oppLogoUrl}" alt="${g.opp}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
               : ''}
-            <div class="opp-logo-placeholder" style="display:${logoSrc ? 'none' : 'flex'}">${oppKey}</div>
+            <div class="opp-logo-placeholder" style="display:${g.oppLogoUrl ? 'none' : 'flex'}">${oppInitials}</div>
           </div>
           <div class="game-info">
-            <div class="game-matchup fr-text">Diamants <span class="${isHome ? 'vs' : 'at'}">${isHome ? 'vs' : '@'}</span> ${opp}</div>
-            <div class="game-matchup en-text">Diamants <span class="${isHome ? 'vs' : 'at'}">${isHome ? 'vs' : '@'}</span> ${opp}</div>
+            <div class="game-matchup">${OUR_TEAM_NAME} <span class="${g.isHome ? 'vs' : 'at'}">${g.isHome ? 'vs' : '@'}</span> ${g.opp}</div>
             <div class="game-meta">
-              <span class="meta-time">🕐 ${time}</span>
-              <span class="meta-location badge ${isHome ? 'badge-home' : 'badge-away'} fr-text">${isHome ? 'Domicile' : 'Extérieur'}</span>
-              <span class="meta-location badge ${isHome ? 'badge-home' : 'badge-away'} en-text">${isHome ? 'Home' : 'Away'}</span>
-              <span>📍 ${venue}</span>
-              <span class="fr-text">Div. ${div} · #${num}</span>
-              <span class="en-text">${div} Div. · #${num}</span>
+              <span class="meta-time fr-text">🕐 ${g.timeFr}</span>
+              <span class="meta-time en-text">🕐 ${g.timeEn}</span>
+              <span class="meta-location badge ${g.isHome ? 'badge-home' : 'badge-away'} fr-text">${g.isHome ? 'Domicile' : 'Extérieur'}</span>
+              <span class="meta-location badge ${g.isHome ? 'badge-home' : 'badge-away'} en-text">${g.isHome ? 'Home' : 'Away'}</span>
+              ${g.venue ? `<span>📍 ${g.venue}</span>` : ''}
+              ${g.number ? `<span>#${g.number}</span>` : ''}
             </div>
           </div>
           <div class="game-badge-wrap">
-            <span class="badge ${isHome ? 'badge-home' : 'badge-away'} fr-text">${isHome ? 'Domicile' : 'Extérieur'}</span>
-            <span class="badge ${isHome ? 'badge-home' : 'badge-away'} en-text">${isHome ? 'Home' : 'Away'}</span>
-            ${dhBadge}
+            <span class="badge ${g.isHome ? 'badge-home' : 'badge-away'} fr-text">${g.isHome ? 'Domicile' : 'Extérieur'}</span>
+            <span class="badge ${g.isHome ? 'badge-home' : 'badge-away'} en-text">${g.isHome ? 'Home' : 'Away'}</span>
+            ${dhFr}${dhEn}
           </div>`;
         listDiv.appendChild(item);
       });
+    }
 
-      // Apply saved lang
-      const saved = localStorage.getItem('lang');
-      if (saved === 'en') setLang('en');
+    function showLoading() {
+      document.getElementById('schedule-content').innerHTML =
+        '<div class="schedule-state"><div class="spinner"></div>' +
+        '<p class="fr-text">Chargement du calendrier…</p>' +
+        '<p class="en-text">Loading schedule…</p></div>';
+    }
+
+    function showError(err) {
+      document.getElementById('schedule-content').innerHTML =
+        '<div class="schedule-state">' +
+        '<p class="fr-text">Impossible de charger le calendrier en ce moment.</p>' +
+        '<p class="en-text">Unable to load the schedule right now.</p>' +
+        '<p class="err-detail">' + (err && err.message ? err.message : String(err)) + '</p>' +
+        '</div>';
     }
 
     // ── BOOT ─────────────────────────────────────────────────────────────────
-    document.addEventListener('DOMContentLoaded', function() {
-      buildSchedule();
-      writeScheduleCache(); // powers diffusion.html + index.html
+    document.addEventListener('DOMContentLoaded', async function() {
+      showLoading();
+      try {
+        const raw   = await fetchSchedule();
+        const games = normalize(raw);
+        render(games);
+        writeCache(games);
+      } catch (err) {
+        console.error('Schedule load failed:', err);
+        showError(err);
+      }
     });
 
     // Restore language early
