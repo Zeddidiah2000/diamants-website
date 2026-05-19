@@ -99,10 +99,6 @@ function parseBirthdateFr(s) {
 function extractFromStaticHtml(html) {
   const out = {};
 
-  // Position (first <span class="pos-badge">XXX</span> inside hero or first profile-row)
-  const posMatch = html.match(/<span class="pos-badge">([^<]+)<\/span>/);
-  if (posMatch) out.positions = posMatch[1].trim();
-
   // Helper: find the value following a given label
   function findValueByLabelFr(labelFr) {
     // Tolerate optional style="…" or other attrs on <span class="p-value">.
@@ -115,6 +111,10 @@ function extractFromStaticHtml(html) {
     if (inner) return inner[1].trim();
     return v.replace(/<[^>]+>/g, '').trim();
   }
+
+  // Detailed positions (e.g. "P/IF", "OF/P", "3B/1B") — from the Position p-value.
+  const pos = findValueByLabelFr('Position');
+  if (pos) out.positions = pos;
 
   // B/T like "D/D (R/R)" — prefer the (R/R) part; otherwise translate French G/D.
   const FR_BT = { D: 'R', G: 'L', A: 'S' }; // Droit/Gauche/Ambidextre
