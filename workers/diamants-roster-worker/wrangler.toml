@@ -1,0 +1,12 @@
+name = "diamants-roster-worker"
+main = "src/index.js"
+compatibility_date = "2026-05-19"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "diamants-db"
+database_id = "a51ef9cf-0fe2-4c18-8221-9b59e576ba54"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "diamants-player-photos"
