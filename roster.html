@@ -129,6 +129,16 @@
     .footer-bottom { max-width: 1100px; margin: 0 auto; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
     .footer-bottom p { font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.04em; }
 
+    /* LOADING + ERROR */
+    .roster-state .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid var(--gray-light); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .roster-state .err-detail { font-family: 'Barlow', sans-serif; font-size: 12px; opacity: 0.6; margin-top: 4px; text-transform: none; font-weight: 400; letter-spacing: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* CAPTAIN / AFFILIATE BADGES inline with name */
+    .player-tag { display: inline-block; font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; padding: 1px 5px; border-radius: 2px; margin-left: 6px; vertical-align: middle; }
+    .player-tag.cap { background: var(--red); color: #fff; }
+    .player-tag.aff { background: var(--gray-light); color: var(--gray); }
+
     /* RESPONSIVE */
     @media (min-width: 1400px) {
       .header-inner { padding: 24px 48px 20px; } .logo-img { height: 175px; }
@@ -189,8 +199,15 @@
 
   <div class="roster-wrap">
 
-    <!-- PITCHERS -->
-    <div class="roster-section">
+    <div id="roster-state" class="roster-state" style="text-align:center;padding:48px 24px;color:var(--gray);">
+      <div class="spinner"></div>
+      <p style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-top:14px">
+        <span class="fr-text">Chargement de l'alignement…</span><span class="en-text">Loading roster…</span>
+      </p>
+    </div>
+
+    <!-- LANCEURS -->
+    <div class="roster-section" id="section-p" hidden>
       <div class="section-header"><span class="fr-text">Lanceurs</span><span class="en-text">Pitchers</span></div>
       <table class="roster-table">
         <thead><tr>
@@ -201,31 +218,12 @@
           <th class="center">Ht</th>
           <th class="center">Wt</th>
         </tr></thead>
-        <tbody>
-          <tr><td><span class="num-badge no-num">—</span></td><td><a href="playerpage/player-bergeron.html" class="player-link">Elliot Bergeron</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">—</td><td class="center ht-cell">—</td><td class="center wt-cell">—</td></tr>
-          <tr><td><span class="num-badge">19</span></td><td><a href="playerpage/player-cantin.html" class="player-link">William Cantin</a></td><td class="center"><span class="pos-badge">IF/P</span></td><td class="center bt-cell">R/R</td><td class="center ht-cell">6-2</td><td class="center wt-cell">210</td></tr>
-          <tr><td><span class="num-badge no-num">—</span></td><td><a href="playerpage/player-chisholm.html" class="player-link">Liam Chisholm</a></td><td class="center"><span class="pos-badge">P/IF</span></td><td class="center bt-cell">R/R</td><td class="center ht-cell">6-00</td><td class="center wt-cell">202</td></tr>
-          <tr><td><span class="num-badge">77</span></td><td><a href="playerpage/player-dionne-a.html" class="player-link">Alexandre Dionne</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">6-02</td><td class="center wt-cell">190</td></tr>
-          <tr><td><span class="num-badge">20</span></td><td><a href="playerpage/player-dionne-j.html" class="player-link">Jeremy Dionne</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">6-03</td><td class="center wt-cell">185</td></tr>
-          <tr><td><span class="num-badge no-num">—</span></td><td><a href="playerpage/player-gagnon.html" class="player-link">Myka Gagnon</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">—</td><td class="center ht-cell">—</td><td class="center wt-cell">—</td></tr>
-          <tr><td><span class="num-badge">55</span></td><td><a href="playerpage/player-jacques.html" class="player-link">Pierre Luc Jacques</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">5-09</td><td class="center wt-cell">185</td></tr>
-          <tr><td><span class="num-badge">32</span></td><td><a href="playerpage/player-lambert.html" class="player-link">Christopher Lambert</a></td><td class="center"><span class="pos-badge">P/IF</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">5-11</td><td class="center wt-cell">155</td></tr>
-          <tr><td><span class="num-badge">38</span></td><td><a href="playerpage/player-laplante.html" class="player-link">Gabriel Laplante</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">R/R</td><td class="center ht-cell">—</td><td class="center wt-cell">—</td></tr>
-          <tr><td><span class="num-badge no-num">—</span></td><td><a href="playerpage/player-lepine.html" class="player-link">Charles Lépine</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">—</td><td class="center ht-cell">—</td><td class="center wt-cell">—</td></tr>
-          <tr><td><span class="num-badge">39</span></td><td><a href="playerpage/player-maranda.html" class="player-link">Loic Maranda</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">6-1</td><td class="center wt-cell">192</td></tr>
-          <tr><td><span class="num-badge">17</span></td><td><a href="playerpage/player-martel.html" class="player-link">Olivier Martel</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">R/R</td><td class="center ht-cell">5-10</td><td class="center wt-cell">190</td></tr>
-          <tr><td><span class="num-badge">22</span></td><td><a href="playerpage/player-masse-c.html" class="player-link">Cédric Massé</a></td><td class="center"><span class="pos-badge">IF</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">—</td><td class="center wt-cell">—</td></tr>
-          <tr><td><span class="num-badge">4</span></td><td><a href="playerpage/player-nasrallah.html" class="player-link">Adam Nasrallah</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">L/L</td><td class="center ht-cell">6-00</td><td class="center wt-cell">185</td></tr>
-          <tr><td><span class="num-badge no-num">—</span></td><td><a href="playerpage/player-ruel.html" class="player-link">Cédric Ruel</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">—</td><td class="center ht-cell">—</td><td class="center wt-cell">—</td></tr>
-          <tr><td><span class="num-badge">30</span></td><td><a href="playerpage/player-stpierre.html" class="player-link">William St-Pierre</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">5-09</td><td class="center wt-cell">135</td></tr>
-          <tr><td><span class="num-badge no-num">—</span></td><td><a href="playerpage/player-tremblay.html" class="player-link">Victor-Pierre Tremblay</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">R/R</td><td class="center ht-cell">—</td><td class="center wt-cell">—</td></tr>
-          <tr><td><span class="num-badge no-num">—</span></td><td><a href="playerpage/player-emond.html" class="player-link">Alexis Émond</a></td><td class="center"><span class="pos-badge">P</span></td><td class="center bt-cell">—</td><td class="center ht-cell">—</td><td class="center wt-cell">—</td></tr>
-        </tbody>
+        <tbody id="tb-p"></tbody>
       </table>
     </div>
 
-    <!-- CATCHERS -->
-    <div class="roster-section">
+    <!-- RECEVEUR -->
+    <div class="roster-section" id="section-c" hidden>
       <div class="section-header"><span class="fr-text">Receveurs</span><span class="en-text">Catchers</span></div>
       <table class="roster-table">
         <thead><tr>
@@ -236,14 +234,12 @@
           <th class="center">Ht</th>
           <th class="center">Wt</th>
         </tr></thead>
-        <tbody>
-          <tr><td><span class="num-badge">8</span></td><td><a href="playerpage/player-masse-l.html" class="player-link">Loic Masse</a></td><td class="center"><span class="pos-badge">C/U</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">5-09</td><td class="center wt-cell">180</td></tr>
-        </tbody>
+        <tbody id="tb-c"></tbody>
       </table>
     </div>
 
-    <!-- INFIELDERS -->
-    <div class="roster-section">
+    <!-- AVANT-CHAMP -->
+    <div class="roster-section" id="section-if" hidden>
       <div class="section-header"><span class="fr-text">Joueurs de champ intérieur</span><span class="en-text">Infielders</span></div>
       <table class="roster-table">
         <thead><tr>
@@ -254,17 +250,12 @@
           <th class="center">Ht</th>
           <th class="center">Wt</th>
         </tr></thead>
-        <tbody>
-          <tr><td><span class="num-badge">5</span></td><td><a href="playerpage/player-fontaine.html" class="player-link">Mathieu Fontaine</a></td><td class="center"><span class="pos-badge">SS</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">6-0</td><td class="center wt-cell">180</td></tr>
-          <tr><td><span class="num-badge">18</span></td><td><a href="playerpage/player-lamontagne.html" class="player-link">Edouard Lamontagne</a></td><td class="center"><span class="pos-badge">IF</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">5-08</td><td class="center wt-cell">160</td></tr>
-          <tr><td><span class="num-badge">36</span></td><td><a href="playerpage/player-lavertu.html" class="player-link">Mickael Lavertu</a></td><td class="center"><span class="pos-badge">3B/1B</span></td><td class="center bt-cell">L/R</td><td class="center ht-cell">6-02</td><td class="center wt-cell">210</td></tr>
-          <tr><td><span class="num-badge">99</span></td><td><a href="playerpage/player-parent.html" class="player-link">Antoine Parent</a></td><td class="center"><span class="pos-badge">1B</span></td><td class="center bt-cell">L/L</td><td class="center ht-cell">5-11</td><td class="center wt-cell">240</td></tr>
-        </tbody>
+        <tbody id="tb-if"></tbody>
       </table>
     </div>
 
-    <!-- OUTFIELDERS -->
-    <div class="roster-section">
+    <!-- VOLTIGEURS -->
+    <div class="roster-section" id="section-of" hidden>
       <div class="section-header"><span class="fr-text">Joueurs de champ extérieur</span><span class="en-text">Outfielders</span></div>
       <table class="roster-table">
         <thead><tr>
@@ -275,24 +266,15 @@
           <th class="center">Ht</th>
           <th class="center">Wt</th>
         </tr></thead>
-        <tbody>
-          <tr><td><span class="num-badge">35</span></td><td><a href="playerpage/player-bouvry.html" class="player-link">Renaud Bouvry</a></td><td class="center"><span class="pos-badge">OF/P</span></td><td class="center bt-cell">R/R</td><td class="center ht-cell">6-02</td><td class="center wt-cell">175</td></tr>
-          <tr><td><span class="num-badge">27</span></td><td><a href="playerpage/player-houde.html" class="player-link">Zachari Houde</a></td><td class="center"><span class="pos-badge">OF</span></td><td class="center bt-cell">R/R</td><td class="center ht-cell">5-10</td><td class="center wt-cell">155</td></tr>
-          <tr><td><span class="num-badge">23</span></td><td><a href="playerpage/player-verge-bernard.html" class="player-link">Francis Verge-Bernard</a></td><td class="center"><span class="pos-badge">OF</span></td><td class="center bt-cell">R/R</td><td class="center ht-cell">5-11</td><td class="center wt-cell">160</td></tr>
-        </tbody>
+        <tbody id="tb-of"></tbody>
       </table>
     </div>
 
     <!-- PERSONNEL -->
-    <div class="roster-section">
+    <div class="roster-section" id="section-staff" hidden>
       <div class="section-header"><span class="fr-text">Personnel</span><span class="en-text">Staff</span></div>
       <table class="personnel-table">
-        <tbody>
-          <tr><td class="p-name">Jean-Christophe Masson</td><td class="role"><span class="fr-text">Entraîneur adjoint</span><span class="en-text">Assistant Coach</span></td></tr>
-          <tr><td class="p-name">Raphael Prémont</td><td class="role"><span class="fr-text">Entraîneur chef</span><span class="en-text">Head Coach</span></td></tr>
-          <tr><td class="p-name">Lucas Serafin</td><td class="role"><span class="fr-text">Entraîneur adjoint</span><span class="en-text">Assistant Coach</span></td></tr>
-          <tr><td class="p-name">Dominik Walsh</td><td class="role"><span class="fr-text">Gérant général</span><span class="en-text">General Manager</span></td></tr>
-        </tbody>
+        <tbody id="tb-staff"></tbody>
       </table>
     </div>
 
@@ -330,10 +312,102 @@
   </footer>
 
   <script>
-    (function() {
-      var saved = localStorage.getItem('lang');
-      if (saved === 'en') setLang('en');
-    })();
+    // ── lang restore ─────────────────────────────────────────────────────────
+    (function() { var s = localStorage.getItem('lang'); if (s === 'en') setLang('en'); })();
+
+    // ── config ───────────────────────────────────────────────────────────────
+    const ROSTER_API = 'https://diamants-roster-worker.chisholm2000.workers.dev';
+
+    // ── helpers ──────────────────────────────────────────────────────────────
+    function formatHeight(inches) {
+      if (inches == null || inches === '') return '—';
+      const ft = Math.floor(inches / 12);
+      const inn = inches % 12;
+      return ft + '-' + String(inn).padStart(2, '0');
+    }
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function playerRow(p) {
+      const num = (p.number != null && p.number !== '')
+        ? `<span class="num-badge">${escapeHtml(p.number)}</span>`
+        : `<span class="num-badge no-num">—</span>`;
+      const tagCap = p.is_captain   ? `<span class="player-tag cap">C</span>` : '';
+      const tagAff = p.is_affiliate ? `<span class="player-tag aff">AFF</span>` : '';
+      const name = `${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}${tagCap}${tagAff}`;
+      const pos = escapeHtml(p.positions || p.position_group || '—');
+      const bt  = escapeHtml(p.bats_throws || '—');
+      const ht  = formatHeight(p.height_inches);
+      const wt  = (p.weight != null && p.weight !== '') ? escapeHtml(String(p.weight)) : '—';
+      return `<tr>
+        <td>${num}</td>
+        <td><span class="player-link">${name}</span></td>
+        <td class="center"><span class="pos-badge">${pos}</span></td>
+        <td class="center bt-cell">${bt}</td>
+        <td class="center ht-cell">${ht}</td>
+        <td class="center wt-cell">${wt}</td>
+      </tr>`;
+    }
+    function staffRow(s) {
+      const name = `${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}`;
+      return `<tr>
+        <td class="p-name">${name}</td>
+        <td class="role"><span class="fr-text">${escapeHtml(s.role_fr)}</span><span class="en-text">${escapeHtml(s.role_en)}</span></td>
+      </tr>`;
+    }
+
+    function showState(html) {
+      const state = document.getElementById('roster-state');
+      state.innerHTML = html;
+      state.hidden = false;
+      ['p','c','if','of','staff'].forEach(g => { document.getElementById('section-' + g).hidden = true; });
+    }
+    function showError(err) {
+      showState(
+        '<p style="font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase">' +
+        '<span class="fr-text">Impossible de charger l\'alignement.</span>' +
+        '<span class="en-text">Unable to load the roster.</span></p>' +
+        '<p class="err-detail">' + escapeHtml(err && err.message ? err.message : String(err)) + '</p>'
+      );
+    }
+
+    // ── fetch + render ───────────────────────────────────────────────────────
+    async function loadRoster() {
+      const [players, staff] = await Promise.all([
+        fetch(`${ROSTER_API}/api/players`).then(r => { if (!r.ok) throw new Error('players HTTP ' + r.status); return r.json(); }),
+        fetch(`${ROSTER_API}/api/staff`).then(r   => { if (!r.ok) throw new Error('staff HTTP ' + r.status);   return r.json(); }),
+      ]);
+
+      // bucket players by position_group
+      const buckets = { P: [], C: [], IF: [], OF: [] };
+      for (const p of players) {
+        if (buckets[p.position_group]) buckets[p.position_group].push(p);
+      }
+      // already ordered by the worker (CASE on position_group, display_order, last_name)
+
+      // populate each tbody
+      for (const g of ['p','c','if','of']) {
+        const rows = buckets[g.toUpperCase()].map(playerRow).join('');
+        document.getElementById('tb-' + g).innerHTML = rows;
+      }
+      document.getElementById('tb-staff').innerHTML = staff.map(staffRow).join('');
+
+      // toggle sections visible only if they have rows
+      ['p','c','if','of'].forEach(g => {
+        document.getElementById('section-' + g).hidden = buckets[g.toUpperCase()].length === 0;
+      });
+      document.getElementById('section-staff').hidden = staff.length === 0;
+
+      document.getElementById('roster-state').hidden = true;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRoster().catch(err => {
+        console.error('Roster load failed:', err);
+        showError(err);
+      });
+    });
   </script>
 </body>
 </html>
