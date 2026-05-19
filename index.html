@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diamants de Québec | Baseball</title>
+  <meta name="description" content="Diamants de Québec — Baseball de la région de Québec / Quebec City Baseball">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    function setLang(lang) {
+      document.body.className = 'lang-' + lang;
+      document.documentElement.lang = lang;
+      var btnFr = document.getElementById('btn-fr');
+      var btnEn = document.getElementById('btn-en');
+      if (btnFr) btnFr.classList.toggle('active', lang === 'fr');
+      if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+      localStorage.setItem('lang', lang);
+    }
+  </script>
+  <style>
+    :root {
+      --navy:        #0f1e3d;
+      --navy-mid:    #182d54;
+      --navy-light:  #223c70;
+      --red:         #c0142a;
+      --red-light:   #e8354d;
+      --red-pale:    #fde8eb;
+      --white:       #ffffff;
+      --off-white:   #f5f6f8;
+      --gray:        #6b7280;
+      --gray-light:  #e5e7eb;
+      --gold-accent: #e8b94a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--off-white);
+      color: var(--navy);
+      overflow-x: hidden;
+    }
+
+    /* LANG BAR */
+    .lang-bar {
+      background: var(--navy);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 5px 28px;
+      gap: 6px;
+    }
+    .lang-btn {
+      background: none;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.6);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 3px 11px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .lang-btn.active, .lang-btn:hover {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--navy);
+      padding: 0;
+    }
+    header::after {
+      content: '';
+      display: block;
+      height: 4px;
+      background: linear-gradient(90deg, var(--navy) 0%, var(--red) 30%, var(--red-light) 50%, var(--red) 70%, var(--navy) 100%);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 28px 20px;
+    }
+    .logo-img {
+      height: 175px;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 4px 18px rgba(192,20,42,0.35)) drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+      transition: transform 0.2s ease;
+    }
+    .logo-img:hover {
+      transform: scale(1.03);
+    }
+
+    /* NAV */
+    nav {
+      background: var(--navy-mid);
+      border-bottom: 3px solid var(--red);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 0 12px;
+    }
+    .nav-inner a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      padding: 13px 15px;
+      transition: all 0.18s;
+      position: relative;
+      white-space: nowrap;
+    }
+    .nav-inner a:hover, .nav-inner a.active { color: var(--red-light); background: rgba(192,20,42,0.08); }
+    .nav-inner a.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--red);
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      text-align: center;
+      background: var(--navy);
+    }
+    .hero-bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center center;
+    }
+    .hero-bg-fallback {
+      position: absolute;
+      inset: 0;
+      background: var(--navy);
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(15,30,61,0.88) 0%, rgba(15,30,61,0.78) 40%, rgba(15,30,61,0.92) 100%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 64px 24px 72px;
+      max-width: 780px;
+    }
+    .hero-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--red-light);
+      margin-bottom: 14px;
+    }
+    .hero h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(52px, 9vw, 96px);
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #fff;
+      line-height: 0.92;
+      letter-spacing: 0.015em;
+      margin-bottom: 8px;
+    }
+    .hero h1 .red { color: var(--red-light); display: block; }
+    .hero-sub {
+      font-size: 16px;
+      color: rgba(255,255,255,0.7);
+      margin: 18px auto 28px;
+      max-width: 540px;
+      line-height: 1.65;
+    }
+    .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; font-weight: 800;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      background: var(--red); color: #fff;
+      border: none; padding: 13px 30px; border-radius: 3px;
+      cursor: pointer; text-decoration: none; display: inline-block;
+      transition: all 0.18s;
+    }
+    .btn-primary:hover { background: var(--red-light); transform: translateY(-1px); }
+    .btn-outline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; font-weight: 800;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      background: transparent; color: #fff;
+      border: 2px solid rgba(255,255,255,0.35);
+      padding: 11px 30px; border-radius: 3px;
+      cursor: pointer; text-decoration: none; display: inline-block;
+      transition: all 0.18s;
+    }
+    .btn-outline:hover { border-color: var(--red-light); color: var(--red-light); transform: translateY(-1px); }
+
+    /* STATS STRIP */
+    .stats-strip {
+      background: var(--red);
+      padding: 16px 28px;
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .stat-item { text-align: center; }
+    .stat-item--logo { display: flex; align-items: center; justify-content: center; }
+    .lbjeq-logo-link { display: block; }
+    .lbjeq-logo-img {
+      height: 72px;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    .lbjeq-logo-img:hover {
+      transform: scale(1.07);
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.55));
+    }
+    .stat-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 30px; font-weight: 900;
+      color: #fff; line-height: 1;
+    }
+    .stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(255,255,255,0.75); margin-top: 3px;
+    }
+
+    /* MAIN LAYOUT */
+    .main-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 36px 24px 56px;
+      display: grid;
+      grid-template-columns: 1fr 290px;
+      gap: 28px;
+    }
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--navy);
+      border-left: 4px solid var(--red);
+      padding-left: 11px; margin-bottom: 18px;
+    }
+    .section-title .muted { color: var(--gray); font-weight: 400; font-size: 13px; letter-spacing: 0.04em; margin-left: 6px; }
+
+    /* NEWS CARDS */
+    .news-card {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 5px; overflow: hidden;
+      margin-bottom: 18px;
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      transition: box-shadow 0.2s, transform 0.2s;
+      text-decoration: none; color: inherit;
+    }
+    .news-card:hover { box-shadow: 0 6px 24px rgba(15,30,61,0.1); transform: translateY(-2px); }
+    .news-img-wrap {
+      min-height: 160px;
+      background: var(--navy-mid);
+      overflow: hidden;
+      position: relative;
+    }
+    .news-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .news-img-placeholder {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    }
+    .news-img-placeholder svg { opacity: 0.18; }
+    .news-body { padding: 16px 18px; display: flex; flex-direction: column; }
+    .news-meta {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 7px;
+    }
+    .news-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 19px; font-weight: 800;
+      color: var(--navy); line-height: 1.18;
+      margin-bottom: 8px;
+    }
+    .news-excerpt {
+      font-size: 13px; color: var(--gray);
+      line-height: 1.6; flex: 1;
+    }
+    .news-read-more {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--red);
+      text-decoration: none;
+      margin-top: 12px;
+      display: inline-block;
+      border: 1.5px solid var(--red);
+      padding: 5px 12px; border-radius: 3px;
+      transition: all 0.18s; align-self: flex-start;
+    }
+    .news-read-more:hover { background: var(--red); color: #fff; }
+
+    /* SIDEBAR */
+    .sidebar { display: flex; flex-direction: column; gap: 18px; }
+    .sidebar-card {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 5px; overflow: hidden;
+    }
+    .sidebar-card-header {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 800;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      background: var(--navy);
+      color: #fff;
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--red);
+    }
+    .sidebar-card-body { padding: 14px; }
+
+    /* GAME ROWS */
+    .game-row {
+      display: grid;
+      grid-template-columns: 38px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--gray-light);
+    }
+    .game-row:last-child { border-bottom: none; }
+    .game-date {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700;
+      text-align: center; text-transform: uppercase;
+      color: var(--gray); line-height: 1.25;
+    }
+    .game-teams {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700;
+      color: var(--navy); line-height: 1.2;
+    }
+    .game-team-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 2px;
+    }
+    .game-loc { font-size: 10px; color: var(--gray); margin-top: 1px; }
+    .game-badge {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; font-weight: 800;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 2px;
+      white-space: nowrap;
+      background: var(--red); color: #fff;
+    }
+    .game-badge.away { background: var(--gray-light); color: var(--gray); }
+
+    /* SPINNER */
+    .spinner {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 3px solid var(--gray-light);
+      border-top-color: var(--red);
+      animation: spin 0.8s linear infinite;
+      margin: 12px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* SOCIAL BUTTONS */
+    .social-btn {
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 12px; border-radius: 3px;
+      text-decoration: none;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: #fff; margin-bottom: 7px;
+      transition: opacity 0.18s;
+    }
+    .social-btn:last-child { margin-bottom: 0; }
+    .social-btn:hover { opacity: 0.88; }
+    .social-btn.fb { background: #1877f2; }
+    .social-btn.yt { background: #ff0000; }
+    .social-btn.ig { background: #c13584; }
+
+    /* FACEBOOK CARD */
+    .fb-card {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 5px; overflow: hidden;
+    }
+    .fb-post-item {
+      display: flex; gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--gray-light);
+      align-items: flex-start;
+    }
+    .fb-post-item:last-child { border-bottom: none; }
+    .fb-post-date {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700;
+      color: var(--red); text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 4px;
+    }
+    .fb-post-text { font-size: 12px; color: var(--gray); line-height: 1.55; }
+    .fb-post-link {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700;
+      color: var(--red); text-decoration: none;
+      letter-spacing: 0.06em; display: inline-block; margin-top: 6px;
+    }
+    .fb-post-link:hover { color: var(--red-light); }
+    .fb-post-img { width: 56px; height: 56px; object-fit: cover; border-radius: 3px; flex-shrink: 0; }
+
+    /* COMING SOON BANNER */
+    .coming-soon-banner {
+      background: var(--navy);
+      color: rgba(255,255,255,0.5);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      text-align: center;
+      padding: 8px;
+    }
+    .coming-soon-banner span { color: var(--red-light); }
+
+    /* FOOTER */
+    footer {
+      background: var(--navy);
+      border-top: 4px solid var(--red);
+      padding: 32px 28px 20px;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 28px; margin-bottom: 24px;
+    }
+    .footer-logo { height: 72px; width: auto; margin-bottom: 10px; border-radius: 6px; }
+    .footer-col-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 800;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--red-light); margin-bottom: 10px;
+    }
+    .footer-col p, .footer-col a {
+      font-size: 12px; color: rgba(255,255,255,0.5);
+      line-height: 1.9; text-decoration: none; display: block;
+    }
+    .footer-col a:hover { color: var(--red-light); }
+    .footer-bottom {
+      max-width: 1100px; margin: 0 auto;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 16px;
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 6px;
+    }
+    .footer-bottom p { font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.04em; }
+
+    /* BILINGUAL */
+    .en-text { display: none !important; }
+    body.lang-en .fr-text { display: none !important; }
+    body.lang-en .en-text { display: revert !important; }
+
+    /* LARGE SCREENS */
+    @media (min-width: 1400px) {
+      .header-inner { padding: 18px 48px; }
+      .logo-img { height: 130px; }
+      .nav-inner a { font-size: 15px; padding: 15px 20px; }
+      .hero { min-height: 620px; }
+      .hero h1 { font-size: 110px; }
+      .hero-sub { font-size: 18px; max-width: 640px; }
+      .btn-primary, .btn-outline { font-size: 16px; padding: 15px 38px; }
+      .stats-strip { padding: 20px 48px; gap: 72px; }
+      .stat-num { font-size: 38px; }
+      .stat-label { font-size: 12px; }
+      .main-layout { max-width: 1380px; padding: 48px 48px 72px; grid-template-columns: 1fr 360px; gap: 36px; }
+      .section-title { font-size: 26px; margin-bottom: 24px; }
+      .news-card { grid-template-columns: 240px 1fr; }
+      .news-img-wrap { min-height: 190px; }
+      .news-title { font-size: 22px; }
+      .news-excerpt { font-size: 14px; }
+      .news-read-more { font-size: 13px; padding: 7px 16px; }
+      .sidebar-card-header { font-size: 15px; padding: 12px 18px; }
+      .game-teams { font-size: 15px; }
+      .game-loc { font-size: 12px; }
+      .social-btn { font-size: 15px; padding: 11px 14px; }
+      .footer-inner { max-width: 1380px; }
+      .footer-bottom { max-width: 1380px; }
+      .footer-col p, .footer-col a { font-size: 14px; }
+      .footer-col-title { font-size: 14px; }
+      .footer-logo { height: 72px; }
+    }
+
+    @media (min-width: 1800px) {
+      .header-inner { padding: 20px 80px; }
+      .logo-img { height: 150px; }
+      .nav-inner a { font-size: 16px; padding: 16px 24px; }
+      .hero { min-height: 720px; }
+      .hero h1 { font-size: 130px; }
+      .hero-sub { font-size: 20px; max-width: 720px; }
+      .stats-strip { padding: 22px 80px; gap: 96px; }
+      .stat-num { font-size: 44px; }
+      .main-layout { max-width: 1680px; padding: 56px 80px 88px; grid-template-columns: 1fr 420px; gap: 48px; }
+      .section-title { font-size: 30px; }
+      .news-card { grid-template-columns: 280px 1fr; }
+      .news-img-wrap { min-height: 220px; }
+      .news-title { font-size: 26px; }
+      .footer-inner { max-width: 1680px; padding: 0 80px; }
+      .footer-bottom { max-width: 1680px; padding-left: 80px; padding-right: 80px; }
+    }
+
+    /* TABLET */
+    @media (max-width: 820px) {
+      .header-inner { flex-direction: column; padding: 16px; }
+      .main-layout { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; gap: 16px; }
+    }
+    @media (max-width: 560px) {
+      .news-card { grid-template-columns: 1fr; }
+      .news-img-wrap { min-height: 160px; }
+      .nav-inner a { padding: 10px 8px; font-size: 11px; }
+      .stats-strip { gap: 20px; }
+    }
+  
+  </style>
+</head>
+<body class="lang-fr">
+
+  <div class="lang-bar">
+    <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <header>
+    <div class="header-inner">
+      <img src="diamantslogo.png" alt="Diamants de Québec" class="logo-img">
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="active"><span class="fr-text">Accueil</span><span class="en-text">Home</span></a>
+      <a href="calendrier.html"><span class="fr-text">Calendrier</span><span class="en-text">Schedule</span></a>
+      <a href="roster.html"><span class="fr-text">Alignement</span><span class="en-text">Roster</span></a>
+      <a href="diffusion.html"><span class="fr-text">Diffusion en direct</span><span class="en-text">Live Stream</span></a>
+      <a href="#"><span class="fr-text">Médias Sociaux</span><span class="en-text">Social Media</span></a>
+      <a href="#"><span class="fr-text">Contact</span><span class="en-text">Contact</span></a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg-fallback"></div>
+    <img src="heroback.png" alt="Diamants de Québec" class="hero-bg-img" onerror="this.style.display='none'">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow fr-text">Diamants de Québec · Québec, Canada</div>
+      <div class="hero-eyebrow en-text">Diamants de Québec · Québec, Canada</div>
+      <h1>
+        <span class="fr-text">Votre page<span class="red">de fans</span></span>
+        <span class="en-text">Your Diamants<span class="red">Fan Page</span></span>
+      </h1>
+      <p class="hero-sub fr-text">Bienvenue sur la page des fans des Diamants de Québec! Suivez vos matchs en direct, consultez l'horaire de la saison et restez connectés à votre équipe.</p>
+      <p class="hero-sub en-text">Welcome to the Diamants de Québec fan hub! Follow live games, check the season schedule and stay connected with your team.</p>
+      <div class="hero-ctas">
+        <a href="calendrier.html" class="btn-primary">
+          <span class="fr-text">Calendrier des matchs</span>
+          <span class="en-text">Game Schedule</span>
+        </a>
+        <a href="diffusion.html" class="btn-outline">
+          <span class="fr-text">▶ Diffusion en direct</span>
+          <span class="en-text">▶ Live Stream</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats-strip">
+    <div class="stat-item">
+      <div class="stat-num">13</div>
+      <div class="stat-label fr-text">Équipes</div>
+      <div class="stat-label en-text">Teams</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2026</div>
+      <div class="stat-label fr-text">Saison en cours</div>
+      <div class="stat-label en-text">Current Season</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">7</div>
+      <div class="stat-label fr-text">Championnats</div>
+      <div class="stat-label en-text">Championships</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">QC</div>
+      <div class="stat-label fr-text">Québec, Canada</div>
+      <div class="stat-label en-text">Québec, Canada</div>
+    </div>
+    <div class="stat-item stat-item--league">
+      <div class="stat-num">LBJEQ</div>
+      <div class="stat-label fr-text">Ligue</div>
+      <div class="stat-label en-text">League</div>
+    </div>
+    <div class="stat-item stat-item--logo">
+      <a href="https://page.spordle.com/fr/ligue-de-baseball-junior-elite-du-quebec" target="_blank" rel="noopener" class="lbjeq-logo-link">
+        <img src="Lbjeq_logo.png" alt="LBJEQ – Ligue de Baseball Junior Élite du Québec" class="lbjeq-logo-img">
+      </a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- MAIN COLUMN -->
+    <main>
+      <div class="section-title">
+        <span class="fr-text">Actualités <span class="muted">· Nouvelles récentes</span></span>
+        <span class="en-text">News <span class="muted">· Latest updates</span></span>
+      </div>
+
+      <!-- News Card 1 -->
+      <a href="#" class="news-card">
+        <div class="news-img-wrap">
+          <div class="news-img-placeholder">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+              <path d="M30 5L55 25V55H5V25L30 5Z" stroke="white" stroke-width="3" fill="none"/>
+              <circle cx="30" cy="35" r="8" stroke="white" stroke-width="3" fill="none"/>
+            </svg>
+          </div>
+          <img src="diamants_news1.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="news-body">
+          <div class="news-meta fr-text">Récent · Nouvelles</div>
+          <div class="news-meta en-text">Recent · News</div>
+          <div class="news-title fr-text">Début de la saison 2026 — Les Diamants prêts à briller</div>
+          <div class="news-title en-text">2026 Season Opens — Diamants Ready to Shine</div>
+          <div class="news-excerpt fr-text">L'organisation des Diamants de Québec est fière d'annoncer le début de la saison 2026. Suivez tous les matchs sur diamantsdequebec.ca!</div>
+          <div class="news-excerpt en-text">The Diamants de Québec organization is proud to announce the start of the 2026 season. Follow all games at diamantsdequebec.ca!</div>
+          <span class="news-read-more">
+            <span class="fr-text">Lire la suite →</span>
+            <span class="en-text">Read more →</span>
+          </span>
+        </div>
+      </a>
+
+      <!-- News Card 2 -->
+      <a href="#" class="news-card">
+        <div class="news-img-wrap">
+          <div class="news-img-placeholder">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+              <circle cx="30" cy="30" r="22" stroke="white" stroke-width="3" fill="none"/>
+              <path d="M20 30L28 38L42 22" stroke="white" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <img src="diamants_news2.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="news-body">
+          <div class="news-meta fr-text">Communiqué · Organisation</div>
+          <div class="news-meta en-text">Press Release · Organization</div>
+          <div class="news-title fr-text">Nouveau site web — Restez connectés à diamantsdequebec.ca</div>
+          <div class="news-title en-text">New Website — Stay Connected at diamantsdequebec.ca</div>
+          <div class="news-excerpt fr-text">Le nouveau site officiel des Diamants de Québec est maintenant en ligne. Calendriers, diffusion en direct, nouvelles de l'équipe — tout au même endroit.</div>
+          <div class="news-excerpt en-text">The new official Diamants de Québec website is now live. Schedules, live streaming, team news — all in one place.</div>
+          <span class="news-read-more">
+            <span class="fr-text">Lire la suite →</span>
+            <span class="en-text">Read more →</span>
+          </span>
+        </div>
+      </a>
+
+      <!-- News Card 3 -->
+      <a href="#" class="news-card">
+        <div class="news-img-wrap">
+          <div class="news-img-placeholder">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+              <rect x="8" y="18" width="44" height="30" rx="3" stroke="white" stroke-width="3" fill="none"/>
+              <path d="M8 26H52" stroke="white" stroke-width="2"/>
+              <path d="M20 12V22M40 12V22" stroke="white" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <img src="diamants_news3.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="news-body">
+          <div class="news-meta fr-text">Saison · Calendrier</div>
+          <div class="news-meta en-text">Season · Schedule</div>
+          <div class="news-title fr-text">Calendrier 2026 maintenant disponible</div>
+          <div class="news-title en-text">2026 Schedule Now Available</div>
+          <div class="news-excerpt fr-text">Consultez le calendrier complet de la saison 2026 des Diamants de Québec. Tous les matchs, dates et lieux disponibles sur le site.</div>
+          <div class="news-excerpt en-text">Check out the full 2026 season schedule for the Diamants de Québec. All games, dates and locations available on the site.</div>
+          <a href="calendrier.html" class="news-read-more">
+            <span class="fr-text">Voir le calendrier →</span>
+            <span class="en-text">View schedule →</span>
+          </a>
+        </div>
+      </a>
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <!-- Upcoming Games -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-header">
+          <span class="fr-text">⚾ Prochains matchs</span>
+          <span class="en-text">⚾ Upcoming Games</span>
+        </div>
+        <div class="sidebar-card-body" id="upcoming-games-body">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <!-- Social Media -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-header">
+          <span class="fr-text">Médias Sociaux</span>
+          <span class="en-text">Social Media</span>
+        </div>
+        <div class="sidebar-card-body">
+          <a href="#" target="_blank" rel="noopener" class="social-btn fb">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </a>
+          <a href="#" target="_blank" rel="noopener" class="social-btn yt">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+            YouTube
+          </a>
+          <a href="#" target="_blank" rel="noopener" class="social-btn ig">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+            Instagram
+          </a>
+        </div>
+      </div>
+
+      <!-- Facebook Posts Preview -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-header">
+          <span class="fr-text">Publications récentes</span>
+          <span class="en-text">Recent Posts</span>
+        </div>
+        <div id="fb-posts-preview"></div>
+      </div>
+
+    </aside>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-col">
+        <img src="diamantslogo.png" alt="Diamants de Québec" class="footer-logo">
+        <p class="fr-text">Diamants de Québec<br>Québec, Canada</p>
+        <p class="en-text">Diamants de Québec<br>Québec, Canada</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title fr-text">Navigation</div>
+        <div class="footer-col-title en-text">Navigation</div>
+        <a href="index.html"><span class="fr-text">Accueil</span><span class="en-text">Home</span></a>
+        <a href="calendrier.html"><span class="fr-text">Calendrier</span><span class="en-text">Schedule</span></a>
+        <a href="roster.html"><span class="fr-text">Alignement</span><span class="en-text">Roster</span></a>
+        <a href="diffusion.html"><span class="fr-text">Diffusion en direct</span><span class="en-text">Live Stream</span></a>
+        <a href="#"><span class="fr-text">Contact</span><span class="en-text">Contact</span></a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Contact</div>
+        <p>diamantsdequebec.ca</p>
+        <a href="#">Facebook</a>
+        <a href="#">YouTube</a>
+        <a href="#">Instagram</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Diamants de Québec &mdash; <span class="fr-text">Tous droits réservés.</span><span class="en-text">All rights reserved.</span></p>
+      <p class="fr-text">Conçu avec fierté à Québec, Canada</p>
+      <p class="en-text">Proudly built in Québec, Canada</p>
+    </div>
+  </footer>
+
+  <script>
+    // ── LANGUAGE RESTORE ──────────────────────────────────────────────────────
+    (function() {
+      var saved = localStorage.getItem('lang');
+      if (saved === 'en') setLang('en');
+    })();
+
+    // ── CONFIG ────────────────────────────────────────────────────────────────
+    // Schedule data comes from localStorage (written by calendrier.html on load).
+    // Cloudflare Worker serves as fallback for first-time visitors who haven't
+    // visited calendrier.html yet. Deploy diamants-schedule-worker.js to get the URL.
+    const SCHEDULE_WORKER_URL = 'https://diamantsched.chisholm2000.workers.dev';
+
+    const FR_MONTHS_SHORT = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+    const EN_MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    async function getScheduleGames() {
+      // 1. localStorage — fast, no network needed
+      try {
+        const raw = localStorage.getItem('diamants_schedule');
+        if (raw) {
+          const { ts, games } = JSON.parse(raw);
+          const ONE_DAY = 24 * 60 * 60 * 1000;
+          if (Date.now() - ts < ONE_DAY && Array.isArray(games) && games.length) return games;
+        }
+      } catch(e) {}
+
+      // 2. Cloudflare Worker fallback
+      try {
+        
+          const r = await fetch(SCHEDULE_WORKER_URL);
+          if (r.ok) {
+            const games = await r.json();
+            if (Array.isArray(games) && games.length) {
+              try { localStorage.setItem('diamants_schedule', JSON.stringify({ ts: Date.now(), games })); } catch(e) {}
+              return games;
+            }
+          }
+        }
+      } catch(e) {}
+
+      return null;
+    }
+
+    async function loadUpcomingGames() {
+      const body = document.getElementById('upcoming-games-body');
+      const games = await getScheduleGames();
+
+      if (!games) {
+        body.innerHTML = `<p style="font-size:12px;color:var(--gray);padding:4px 0;">
+          <span class="fr-text">Calendrier bientôt disponible.</span>
+          <span class="en-text">Schedule coming soon.</span>
+        </p>
+        <div style="margin-top:10px;">
+          <a href="calendrier.html" class="news-read-more" style="font-size:11px;">
+            <span class="fr-text">Voir le calendrier</span>
+            <span class="en-text">View schedule</span>
+          </a>
+        </div>`;
+        setLang(localStorage.getItem('lang') || 'fr');
+        return;
+      }
+
+      const now      = new Date();
+      const upcoming = games
+        .filter(g => new Date(g.date) >= now)
+        .slice(0, 4); // show up to 4 next games
+
+      let html = '';
+      upcoming.forEach(g => {
+        const d       = new Date(g.date);
+        const dayNum  = d.getDate();
+        const frMonth = FR_MONTHS_SHORT[d.getMonth()];
+        const enMonth = EN_MONTHS_SHORT[d.getMonth()];
+        html += `
+          <div class="game-row">
+            <div class="game-date">
+              <span class="fr-text">${frMonth}<br>${dayNum}</span>
+              <span class="en-text">${enMonth}<br>${dayNum}</span>
+            </div>
+            <div>
+              <div class="game-teams">Diamants ${g.isHome ? 'vs' : '@'} ${g.opp}</div>
+              <div class="game-loc">${g.time} · 📍 ${g.venue}</div>
+            </div>
+            <div class="game-badge${g.isHome ? '' : ' away'}">
+              <span class="fr-text">${g.isHome ? 'Dom.' : 'Ext.'}</span>
+              <span class="en-text">${g.isHome ? 'Home' : 'Away'}</span>
+            </div>
+          </div>`;
+      });
+
+      if (!upcoming.length) {
+        html = `<p style="font-size:12px;color:var(--gray);padding:8px 0;">
+          <span class="fr-text">Aucun match à venir pour le moment.</span>
+          <span class="en-text">No upcoming games at this time.</span>
+        </p>`;
+      }
+
+      html += `<div style="margin-top:10px;">
+        <a href="calendrier.html" class="news-read-more" style="font-size:11px;">
+          <span class="fr-text">Calendrier complet</span>
+          <span class="en-text">Full schedule</span>
+        </a>
+      </div>`;
+
+      body.innerHTML = html;
+      setLang(localStorage.getItem('lang') || 'fr');
+    }
+
+    // ── FACEBOOK POST PREVIEWS ────────────────────────────────────────────────
+    // Update these manually from the latest posts on the Facebook page.
+    const FB_POSTS = [
+      {
+        date:   'Récent · Facebook',
+        text:   'Bienvenue sur la page officielle des Diamants de Québec! Suivez notre saison 2026 ici même.',
+        img:    '',
+        href:   '#',
+      },
+      {
+        date:   'Saison 2026 · Facebook',
+        text:   'Le calendrier de la saison 2026 est maintenant disponible. Consultez toutes les dates sur diamantsdequebec.ca!',
+        img:    '',
+        href:   '#',
+      },
+    ];
+
+    function renderFbPosts() {
+      const el = document.getElementById('fb-posts-preview');
+      if (!el) return;
+      el.innerHTML = FB_POSTS.map(p => `
+        <div class="fb-post-item">
+          <div>
+            <div class="fb-post-date">${p.date}</div>
+            <div class="fb-post-text">${p.text}</div>
+            <a href="${p.href}" target="_blank" rel="noopener" class="fb-post-link">
+              <span class="fr-text">Lire sur Facebook →</span>
+              <span class="en-text">Read on Facebook →</span>
+            </a>
+          </div>
+          ${p.img ? `<img src="${p.img}" alt="" class="fb-post-img" loading="lazy">` : ''}
+        </div>`).join('');
+    }
+
+    // ── BOOT ──────────────────────────────────────────────────────────────────
+    renderFbPosts();
+    loadUpcomingGames();
+  </script>
+
+</body>
+</html>

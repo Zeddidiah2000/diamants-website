@@ -1,0 +1,13 @@
+**/.wrangler/
+node_modules/
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Local environment
+.env
+.env.local
+*.local
