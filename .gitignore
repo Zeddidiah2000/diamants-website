@@ -11,3 +11,7 @@ Thumbs.db
 .env
 .env.local
 *.local
+
+# Generated / secret
+**/.admin-token.txt
+**/seed.sql
