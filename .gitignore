@@ -15,4 +15,5 @@ Thumbs.db
 # Generated / secret
 **/.admin-token.txt
 **/.cf-token.txt
+**/.anthropic-key.txt
 **/seed.sql
