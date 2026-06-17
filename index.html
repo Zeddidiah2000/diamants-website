@@ -564,6 +564,7 @@
     <div class="nav-inner">
       <a href="index.html" class="active"><span class="fr-text">Accueil</span><span class="en-text">Home</span></a>
       <a href="calendrier.html"><span class="fr-text">Calendrier</span><span class="en-text">Schedule</span></a>
+      <a href="classement.html"><span class="fr-text">Classement</span><span class="en-text">Standings</span></a>
       <a href="roster.html"><span class="fr-text">Alignement</span><span class="en-text">Roster</span></a>
       <a href="diffusion.html"><span class="fr-text">Diffusion en direct</span><span class="en-text">Live Stream</span></a>
       <a href="#"><span class="fr-text">Médias Sociaux</span><span class="en-text">Social Media</span></a>
@@ -638,6 +639,7 @@
         <span class="en-text">News <span class="muted">· Latest updates</span></span>
       </div>
 
+      <div id="news-cards">
       <!-- News Card 1 -->
       <a href="#" class="news-card">
         <div class="news-img-wrap">
@@ -713,6 +715,7 @@
           </a>
         </div>
       </a>
+      </div>
     </main>
 
     <!-- SIDEBAR -->
@@ -736,7 +739,7 @@
           <span class="en-text">Social Media</span>
         </div>
         <div class="sidebar-card-body">
-          <a href="#" target="_blank" rel="noopener" class="social-btn fb">
+          <a href="https://www.facebook.com/diamantsquebec" target="_blank" rel="noopener" class="social-btn fb">
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             Facebook
           </a>
@@ -757,7 +760,24 @@
           <span class="fr-text">Publications récentes</span>
           <span class="en-text">Recent Posts</span>
         </div>
-        <div id="fb-posts-preview"></div>
+        <div id="fb-root"></div>
+        <div id="fb-posts-preview" style="display:flex;justify-content:center;">
+          <div class="fb-page"
+               data-href="https://www.facebook.com/diamantsquebec"
+               data-tabs="timeline"
+               data-width="340"
+               data-height="640"
+               data-small-header="true"
+               data-adapt-container-width="true"
+               data-hide-cover="false"
+               data-show-facepile="true">
+            <blockquote cite="https://www.facebook.com/diamantsquebec" class="fb-xfbml-parse-ignore">
+              <a href="https://www.facebook.com/diamantsquebec">Diamants de Québec</a>
+            </blockquote>
+          </div>
+        </div>
+        <script async defer crossorigin="anonymous"
+          src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v19.0"></script>
       </div>
 
     </aside>
@@ -802,144 +822,109 @@
     })();
 
     // ── CONFIG ────────────────────────────────────────────────────────────────
-    // Schedule data comes from localStorage (written by calendrier.html on load).
-    // Cloudflare Worker serves as fallback for first-time visitors who haven't
-    // visited calendrier.html yet. Deploy diamants-schedule-worker.js to get the URL.
-    const SCHEDULE_WORKER_URL = 'https://diamantsched.chisholm2000.workers.dev';
-
+    // Upcoming games + recent results come live from GameChanger via diamants-gc-worker.
+    const GC_WORKER = 'https://diamants-gc-worker.chisholm2000.workers.dev';
     const FR_MONTHS_SHORT = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
     const EN_MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-    async function getScheduleGames() {
-      // 1. localStorage — fast, no network needed
-      try {
-        const raw = localStorage.getItem('diamants_schedule');
-        if (raw) {
-          const { ts, games } = JSON.parse(raw);
-          const ONE_DAY = 24 * 60 * 60 * 1000;
-          if (Date.now() - ts < ONE_DAY && Array.isArray(games) && games.length) return games;
-        }
-      } catch(e) {}
+    function etParts(iso) {
+      const d = new Date(iso);
+      const f = new Intl.DateTimeFormat('en-CA', { timeZone:'America/Toronto', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false });
+      const p = {}; for (const x of f.formatToParts(d)) p[x.type] = x.value;
+      return { month:(+p.month)-1, day:+p.day, timeFr:(+p.hour)+'h'+p.minute, timeEn:(((+p.hour)%12)||12)+':'+p.minute+((+p.hour)<12?' AM':' PM') };
+    }
 
-      // 2. Cloudflare Worker fallback
+    async function fetchGames() {
       try {
-        
-          const r = await fetch(SCHEDULE_WORKER_URL);
-          if (r.ok) {
-            const games = await r.json();
-            if (Array.isArray(games) && games.length) {
-              try { localStorage.setItem('diamants_schedule', JSON.stringify({ ts: Date.now(), games })); } catch(e) {}
-              return games;
-            }
-          }
-        }
-      } catch(e) {}
+        const r = await fetch(`${GC_WORKER}/api/games`, { cache:'no-store' });
+        if (!r.ok) return [];
+        const d = await r.json();
+        return Array.isArray(d.games) ? d.games : [];
+      } catch(e) { return []; }
+    }
 
-      return null;
+    function gameRow(g, opts) {
+      const pt = etParts(g.start_ts);
+      const isHome = g.home_away === 'home';
+      const hasScore = g.our_score != null && g.opp_score != null;
+      let bottom;
+      if (opts && opts.result && hasScore) {
+        const oc = g.our_score > g.opp_score ? 'V' : g.our_score < g.opp_score ? 'D' : 'N';
+        bottom = `<div class="game-loc">${g.our_score} – ${g.opp_score} · ${oc}</div>`;
+      } else {
+        bottom = `<div class="game-loc"><span class="fr-text">${pt.timeFr}</span><span class="en-text">${pt.timeEn}</span></div>`;
+      }
+      return `
+        <div class="game-row">
+          <div class="game-date">
+            <span class="fr-text">${FR_MONTHS_SHORT[pt.month]}<br>${pt.day}</span>
+            <span class="en-text">${EN_MONTHS_SHORT[pt.month]}<br>${pt.day}</span>
+          </div>
+          <div>
+            <div class="game-teams">Diamants ${isHome ? 'vs' : '@'} ${g.opponent_name || ''}</div>
+            ${bottom}
+          </div>
+          <div class="game-badge${isHome ? '' : ' away'}">
+            <span class="fr-text">${isHome ? 'Dom.' : 'Ext.'}</span>
+            <span class="en-text">${isHome ? 'Home' : 'Away'}</span>
+          </div>
+        </div>`;
     }
 
     async function loadUpcomingGames() {
       const body = document.getElementById('upcoming-games-body');
-      const games = await getScheduleGames();
-
-      if (!games) {
-        body.innerHTML = `<p style="font-size:12px;color:var(--gray);padding:4px 0;">
-          <span class="fr-text">Calendrier bientôt disponible.</span>
-          <span class="en-text">Schedule coming soon.</span>
-        </p>
-        <div style="margin-top:10px;">
-          <a href="calendrier.html" class="news-read-more" style="font-size:11px;">
-            <span class="fr-text">Voir le calendrier</span>
-            <span class="en-text">View schedule</span>
-          </a>
-        </div>`;
-        setLang(localStorage.getItem('lang') || 'fr');
-        return;
-      }
-
-      const now      = new Date();
-      const upcoming = games
-        .filter(g => new Date(g.date) >= now)
-        .slice(0, 4); // show up to 4 next games
+      if (!body) return;
+      const games  = await fetchGames();
+      const now    = Date.now();
+      const isDone = g => ['completed','final','forfeit'].includes((g.status||'').toLowerCase());
+      const upcoming = games.filter(g => g.start_ts && new Date(g.start_ts).getTime() >= now && !isDone(g)).slice(0, 4);
 
       let html = '';
-      upcoming.forEach(g => {
-        const d       = new Date(g.date);
-        const dayNum  = d.getDate();
-        const frMonth = FR_MONTHS_SHORT[d.getMonth()];
-        const enMonth = EN_MONTHS_SHORT[d.getMonth()];
-        html += `
-          <div class="game-row">
-            <div class="game-date">
-              <span class="fr-text">${frMonth}<br>${dayNum}</span>
-              <span class="en-text">${enMonth}<br>${dayNum}</span>
-            </div>
-            <div>
-              <div class="game-teams">Diamants ${g.isHome ? 'vs' : '@'} ${g.opp}</div>
-              <div class="game-loc">${g.time} · 📍 ${g.venue}</div>
-            </div>
-            <div class="game-badge${g.isHome ? '' : ' away'}">
-              <span class="fr-text">${g.isHome ? 'Dom.' : 'Ext.'}</span>
-              <span class="en-text">${g.isHome ? 'Home' : 'Away'}</span>
-            </div>
-          </div>`;
-      });
-
-      if (!upcoming.length) {
-        html = `<p style="font-size:12px;color:var(--gray);padding:8px 0;">
-          <span class="fr-text">Aucun match à venir pour le moment.</span>
-          <span class="en-text">No upcoming games at this time.</span>
-        </p>`;
+      if (upcoming.length) {
+        html = upcoming.map(g => gameRow(g)).join('');
+      } else {
+        const recent = games.filter(isDone).filter(g => g.our_score != null).slice(-3).reverse();
+        if (recent.length) {
+          html = `<div style="font-size:11px;color:var(--gray);font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;"><span class="fr-text">Derniers résultats</span><span class="en-text">Recent results</span></div>`
+               + recent.map(g => gameRow(g, { result:true })).join('');
+        } else {
+          html = `<p style="font-size:12px;color:var(--gray);padding:8px 0;"><span class="fr-text">Aucun match à venir pour le moment.</span><span class="en-text">No upcoming games at this time.</span></p>`;
+        }
       }
-
-      html += `<div style="margin-top:10px;">
-        <a href="calendrier.html" class="news-read-more" style="font-size:11px;">
-          <span class="fr-text">Calendrier complet</span>
-          <span class="en-text">Full schedule</span>
-        </a>
-      </div>`;
-
+      html += `<div style="margin-top:10px;"><a href="calendrier.html" class="news-read-more" style="font-size:11px;"><span class="fr-text">Calendrier complet</span><span class="en-text">Full schedule</span></a></div>`;
       body.innerHTML = html;
       setLang(localStorage.getItem('lang') || 'fr');
     }
 
-    // ── FACEBOOK POST PREVIEWS ────────────────────────────────────────────────
-    // Update these manually from the latest posts on the Facebook page.
-    const FB_POSTS = [
-      {
-        date:   'Récent · Facebook',
-        text:   'Bienvenue sur la page officielle des Diamants de Québec! Suivez notre saison 2026 ici même.',
-        img:    '',
-        href:   '#',
-      },
-      {
-        date:   'Saison 2026 · Facebook',
-        text:   'Le calendrier de la saison 2026 est maintenant disponible. Consultez toutes les dates sur diamantsdequebec.ca!',
-        img:    '',
-        href:   '#',
-      },
-    ];
-
-    function renderFbPosts() {
-      const el = document.getElementById('fb-posts-preview');
-      if (!el) return;
-      el.innerHTML = FB_POSTS.map(p => `
-        <div class="fb-post-item">
-          <div>
-            <div class="fb-post-date">${p.date}</div>
-            <div class="fb-post-text">${p.text}</div>
-            <a href="${p.href}" target="_blank" rel="noopener" class="fb-post-link">
-              <span class="fr-text">Lire sur Facebook →</span>
-              <span class="en-text">Read on Facebook →</span>
-            </a>
-          </div>
-          ${p.img ? `<img src="${p.img}" alt="" class="fb-post-img" loading="lazy">` : ''}
-        </div>`).join('');
+    // ── SPORDLE NEWS (dormant until worker secrets set; the FB plugin is live now) ─
+    async function loadNews() {
+      const wrap = document.getElementById('news-cards');
+      if (!wrap) return;
+      try {
+        const lang = localStorage.getItem('lang') === 'en' ? 'en' : 'fr';
+        const r = await fetch(`${GC_WORKER}/api/news?lang=${lang}`, { cache:'no-store' });
+        if (!r.ok) return;
+        const d = await r.json();
+        if (!d || !Array.isArray(d.items) || !d.items.length) return; // keep static cards
+        wrap.innerHTML = d.items.map(p => {
+          let dateStr = '';
+          if (p.date) { const dt = new Date(String(p.date).replace(' ','T')); if (!isNaN(dt)) dateStr = dt.toLocaleDateString(lang==='en'?'en-CA':'fr-CA', { year:'numeric', month:'long', day:'numeric' }); }
+          const title = String(p.title||'').replace(/[<>]/g,'');
+          return `<a href="${p.href}" target="_blank" rel="noopener" class="news-card">
+            <div class="news-body">
+              <div class="news-meta">${dateStr} · Spordle</div>
+              <div class="news-title">${title}</div>
+              <span class="news-read-more"><span class="fr-text">Lire sur Spordle →</span><span class="en-text">Read on Spordle →</span></span>
+            </div>
+          </a>`;
+        }).join('');
+        setLang(localStorage.getItem('lang') || 'fr');
+      } catch(e) { /* keep static cards */ }
     }
 
     // ── BOOT ──────────────────────────────────────────────────────────────────
-    renderFbPosts();
     loadUpcomingGames();
+    loadNews();
   </script>
 
 </body>

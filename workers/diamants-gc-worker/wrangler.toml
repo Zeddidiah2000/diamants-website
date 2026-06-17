@@ -1,0 +1,16 @@
+name = "diamants-gc-worker"
+main = "src/index.js"
+compatibility_date = "2026-05-19"
+workers_dev = true
+
+kv_namespaces = [
+  { binding = "GC", id = "16df0fa180ff41f9854eb8e8834a85e0" }
+]
+
+[triggers]
+crons = ["*/10 * * * *"]
+
+# Optional secrets — Spordle team news (/api/news stays empty until BOTH are set):
+#   SPORDLE_PAGE_ID       (the diamants-de-quebec page UUID, from the Spordle page's network calls)
+#   SPORDLE_PAGE_API_KEY  (the x-api-key the Spordle page sends)
+# Set with: printf "%s" "<value>" | npx wrangler secret put SPORDLE_PAGE_ID

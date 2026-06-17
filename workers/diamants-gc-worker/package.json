@@ -1,0 +1,5 @@
+{
+  "name": "diamants-gc-worker",
+  "private": true,
+  "description": "GameChanger proxy/harvester for the Diamants de Québec site (games, standings, logos, news)."
+}
