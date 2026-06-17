@@ -2,6 +2,22 @@ name = "diamants-roster-worker"
 main = "src/index.js"
 compatibility_date = "2026-05-19"
 
+# Public pages (roster.html, calendrier.html, joueur.html) fetch the public API
+# from diamants-roster-worker.chisholm2000.workers.dev — keep workers.dev enabled.
+workers_dev = true
+
+# Public API stays on diamants-roster-worker.chisholm2000.workers.dev.
+# Admin API is also served at diamantsdequebec.ca/admin/api/* — a zone route that
+# sits behind the "Diamants Admin" Cloudflare Access app, so CF injects a signed
+# Access JWT (Cf-Access-Jwt-Assertion) that the worker verifies. Admin writes
+# cannot be reached via workers.dev (no JWT there).
+routes = [
+  { pattern = "diamantsdequebec.ca/admin/api/*", zone_name = "diamantsdequebec.ca" }
+]
+
+# ANTHROPIC_API_KEY is a secret (Haiku vision for stats parsing):
+#   printf "%s" "$(cat .anthropic-key.txt)" | npx wrangler secret put ANTHROPIC_API_KEY
+
 [[d1_databases]]
 binding = "DB"
 database_name = "diamants-db"

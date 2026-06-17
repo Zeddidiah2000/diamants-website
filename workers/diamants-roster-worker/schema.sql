@@ -18,11 +18,13 @@ CREATE TABLE IF NOT EXISTS players (
   hometown_city   TEXT,
   hometown_state  TEXT,
   hometown_country TEXT,
+  provenance      TEXT,
   photo_key       TEXT,
   is_captain      INTEGER DEFAULT 0,
   is_affiliate    INTEGER DEFAULT 0,
   bio_fr          TEXT,
   bio_en          TEXT,
+  stats_json      TEXT,
   display_order   INTEGER DEFAULT 0,
   created_at      TEXT    DEFAULT (datetime('now')),
   updated_at      TEXT    DEFAULT (datetime('now'))

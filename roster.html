@@ -335,14 +335,17 @@
         : `<span class="num-badge no-num">—</span>`;
       const tagCap = p.is_captain   ? `<span class="player-tag cap">C</span>` : '';
       const tagAff = p.is_affiliate ? `<span class="player-tag aff">AFF</span>` : '';
-      const name = `${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}${tagCap}${tagAff}`;
+      const fullName = `${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}`;
+      const nameCell = p.slug
+        ? `<a class="player-link" href="joueur.html?slug=${encodeURIComponent(p.slug)}">${fullName}</a>${tagCap}${tagAff}`
+        : `<span class="player-link">${fullName}</span>${tagCap}${tagAff}`;
       const pos = escapeHtml(p.positions || p.position_group || '—');
       const bt  = escapeHtml(p.bats_throws || '—');
       const ht  = formatHeight(p.height_inches);
       const wt  = (p.weight != null && p.weight !== '') ? escapeHtml(String(p.weight)) : '—';
       return `<tr>
         <td>${num}</td>
-        <td><span class="player-link">${name}</span></td>
+        <td>${nameCell}</td>
         <td class="center"><span class="pos-badge">${pos}</span></td>
         <td class="center bt-cell">${bt}</td>
         <td class="center ht-cell">${ht}</td>

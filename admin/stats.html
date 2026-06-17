@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Stats — Admin Diamants</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --navy:#0f1e3d; --navy-mid:#182d54; --navy-light:#223c70;
+      --red:#c0142a; --red-light:#e8354d;
+      --off:#f4f7fa; --gray:#6b7280; --line:#e5e7eb; --white:#fff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Barlow',sans-serif;background:var(--off);color:var(--navy)}
+    header{background:var(--navy);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:14px}
+    header h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:22px;margin:0}
+    header .tag{background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:12px;padding:3px 8px;border-radius:4px;letter-spacing:.06em}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:20px}
+    h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:18px;margin:0 0 12px;border-left:4px solid var(--red);padding-left:10px}
+    label{display:block;font-weight:600;font-size:13px;margin:10px 0 4px}
+    input[type=text],input[type=file],select{font-family:'Barlow',sans-serif;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;width:100%;background:#fff}
+    .btn{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:14px;border:none;border-radius:6px;padding:10px 18px;cursor:pointer;color:#fff;background:var(--navy-light)}
+    .btn.red{background:var(--red)}
+    .btn:disabled{opacity:.45;cursor:not-allowed}
+    .row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+    .row>div{flex:1;min-width:160px}
+    table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+    th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;white-space:nowrap}
+    th{background:var(--navy);color:#fff;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;font-weight:700;letter-spacing:.04em;font-size:12px}
+    td.match select{min-width:200px}
+    .muted{color:var(--gray);font-size:13px}
+    .pill{display:inline-block;background:var(--navy-light);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:12px;padding:2px 9px;border-radius:99px;letter-spacing:.04em}
+    #msg{padding:12px 14px;border-radius:8px;margin:14px 0;display:none;font-weight:600;font-size:14px}
+    #msg.ok{background:#e6f6ec;color:#11663a;display:block}
+    #msg.err{background:#fdeaec;color:#9a1322;display:block;white-space:pre-wrap}
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .scroll{overflow-x:auto}
+    .who{margin-left:auto;font-size:13px;opacity:.85}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Diamants — Stats</h1>
+    <span class="tag">Admin</span>
+    <span class="who" id="who"></span>
+  </header>
+
+  <div class="wrap">
+    <div class="card">
+      <h2>1 · Capture GameChanger</h2>
+      <p class="muted">Téléverse une capture d'écran d'un tableau de stats d'équipe GameChanger (frappeurs OU lanceurs). L'IA (Claude Haiku) lit le tableau ; tu valides avant d'enregistrer.</p>
+      <div class="row">
+        <div>
+          <label for="file">Capture d'écran (PNG / JPG, max 5 Mo)</label>
+          <input type="file" id="file" accept="image/png,image/jpeg,image/webp">
+        </div>
+        <div style="flex:0 0 auto">
+          <button class="btn" id="parseBtn" disabled>Lire la capture</button>
+        </div>
+      </div>
+      <img id="preview" style="max-width:100%;margin-top:14px;border-radius:8px;display:none">
+    </div>
+
+    <div id="msg"></div>
+
+    <div class="card" id="review" style="display:none">
+      <h2>2 · Vérifier &amp; associer</h2>
+      <div class="row">
+        <div style="flex:0 0 120px">
+          <label for="season">Saison</label>
+          <input type="text" id="season" maxlength="4" placeholder="2026">
+        </div>
+        <div style="flex:0 0 auto">
+          <label>Type</label>
+          <span class="pill" id="statType">—</span>
+        </div>
+      </div>
+      <p class="muted" style="margin-top:12px">Associe chaque ligne lue à un joueur de l'alignement. Les lignes « — Ignorer — » ne seront pas enregistrées.</p>
+      <div class="scroll">
+        <table id="tbl"><thead></thead><tbody></tbody></table>
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn red" id="commitBtn">Enregistrer les stats</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// All admin calls go through the Access-protected zone route (same origin).
+// Public reads work there too (the worker strips /admin and routes /api/...).
+const API = '/admin/api';
+let players = [];
+let parsed  = null;
+
+const $ = (id) => document.getElementById(id);
+function msg(text, kind){ const m=$('msg'); m.textContent=text; m.className=kind; if(!text) m.style.display='none'; }
+
+function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,'').trim(); }
+
+// Best player match for a parsed row (by jersey number first, then name).
+function matchPlayer(row){
+  const num = String(row.number||'').trim();
+  if (num){ const byNum = players.find(p => String(p.number||'').trim() === num); if (byNum) return byNum.id; }
+  const n = norm(row.name);
+  if (!n) return '';
+  let best='', bestScore=0;
+  for (const p of players){
+    const full = norm(p.first_name+' '+p.last_name);
+    const last = norm(p.last_name);
+    let score=0;
+    if (full===n) score=100;
+    else if (n.includes(last) || full.includes(n) || n.includes(full.split(' ').pop())) score=60;
+    else if (last && n.split(' ').some(w=>w===last)) score=50;
+    if (score>bestScore){ bestScore=score; best=p.id; }
+  }
+  return bestScore>=50 ? best : '';
+}
+
+async function loadPlayers(){
+  const r = await fetch(`${API}/players`, { credentials:'include' });
+  if (!r.ok) throw new Error('players HTTP '+r.status);
+  players = await r.json();
+}
+
+async function whoAmI(){
+  try{ const r=await fetch('/cdn-cgi/access/get-identity',{credentials:'include'}); if(r.ok){ const id=await r.json(); $('who').textContent = id.email || ''; } }catch{}
+}
+
+$('file').addEventListener('change', () => {
+  const f = $('file').files[0];
+  $('parseBtn').disabled = !f;
+  if (f){ const u=URL.createObjectURL(f); $('preview').src=u; $('preview').style.display='block'; }
+});
+
+$('parseBtn').addEventListener('click', async () => {
+  const f = $('file').files[0]; if (!f) return;
+  if (f.size > 5*1024*1024){ msg('Image trop grande (max 5 Mo).','err'); return; }
+  msg('','');
+  $('parseBtn').disabled = true;
+  $('parseBtn').innerHTML = '<span class="spinner"></span>Lecture…';
+  try{
+    const r = await fetch(`${API}/stats/parse`, {
+      method:'POST', credentials:'include',
+      headers:{ 'Content-Type': f.type },
+      body: f,
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || ('HTTP '+r.status));
+    parsed = data;
+    renderReview();
+    msg('Tableau lu. Vérifie les associations puis enregistre.','ok');
+  }catch(e){
+    msg('Échec de lecture : '+(e.message||e), 'err');
+  }finally{
+    $('parseBtn').disabled = false;
+    $('parseBtn').textContent = 'Lire la capture';
+  }
+});
+
+function renderReview(){
+  $('statType').textContent = parsed.stat_type || 'unknown';
+  $('season').value = (parsed.season && /^\d{4}$/.test(parsed.season)) ? parsed.season : '2026';
+  const cols = parsed.columns && parsed.columns.length ? parsed.columns
+             : Array.from(new Set((parsed.rows||[]).flatMap(r => Object.keys(r.stats||{}))));
+  const thead = $('tbl').querySelector('thead');
+  const tbody = $('tbl').querySelector('tbody');
+  thead.innerHTML = '<tr><th>Lu : #</th><th>Lu : nom</th><th class="match">Joueur</th>' + cols.map(c=>`<th>${esc(c)}</th>`).join('') + '</tr>';
+  const opts = ['<option value="">— Ignorer —</option>']
+    .concat(players.map(p=>`<option value="${p.id}">#${esc(p.number||'?')} ${esc(p.first_name)} ${esc(p.last_name)}</option>`)).join('');
+  tbody.innerHTML = (parsed.rows||[]).map((row,i)=>{
+    const sel = matchPlayer(row);
+    const cells = cols.map(c=>`<td>${esc((row.stats&&row.stats[c])||'')}</td>`).join('');
+    const select = `<select data-i="${i}">${opts.replace(`value="${sel}"`, `value="${sel}" selected`)}</select>`;
+    return `<tr><td>${esc(row.number||'')}</td><td>${esc(row.name||'')}</td><td class="match">${select}</td>${cells}</tr>`;
+  }).join('');
+  $('review').style.display = 'block';
+  $('review').scrollIntoView({behavior:'smooth'});
+}
+
+$('commitBtn').addEventListener('click', async () => {
+  const season = $('season').value.trim();
+  if (!/^\d{4}$/.test(season)){ msg('Saison invalide (année à 4 chiffres).','err'); return; }
+  const type = parsed.stat_type === 'pitching' ? 'pitching' : 'batting';
+  const selects = Array.from($('tbl').querySelectorAll('select'));
+  const jobs = [];
+  for (const s of selects){
+    const pid = s.value; if (!pid) continue;
+    const row = parsed.rows[+s.dataset.i];
+    jobs.push({ pid, body:{ season, [type]: row.stats || {} } });
+  }
+  if (!jobs.length){ msg('Aucune ligne associée à un joueur.','err'); return; }
+  $('commitBtn').disabled = true;
+  $('commitBtn').innerHTML = '<span class="spinner"></span>Enregistrement…';
+  let ok=0; const errs=[];
+  for (const j of jobs){
+    try{
+      const r = await fetch(`${API}/players/${j.pid}/stats`, {
+        method:'PUT', credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(j.body),
+      });
+      if (!r.ok){ const d=await r.json().catch(()=>({})); throw new Error(d.error||('HTTP '+r.status)); }
+      ok++;
+    }catch(e){ errs.push(`#${j.pid}: ${e.message||e}`); }
+  }
+  $('commitBtn').disabled = false;
+  $('commitBtn').textContent = 'Enregistrer les stats';
+  if (errs.length) msg(`${ok} enregistré(s), ${errs.length} erreur(s) :\n`+errs.join('\n'),'err');
+  else msg(`${ok} joueur(s) mis à jour pour la saison ${season} (${type}). ✓`,'ok');
+});
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+(async () => {
+  await whoAmI();
+  try{ await loadPlayers(); }
+  catch(e){ msg('Impossible de charger l\'alignement : '+(e.message||e),'err'); }
+})();
+</script>
+</body>
+</html>

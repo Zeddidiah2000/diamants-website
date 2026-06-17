@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joueur — Diamants de Québec</title>
+  <meta name="description" content="Profil de joueur — Diamants de Québec / Player profile — Diamants de Québec">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    function setLang(lang) {
+      document.body.className = 'lang-' + lang;
+      document.documentElement.lang = lang;
+      document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      localStorage.setItem('lang', lang);
+    }
+  </script>
+  <style>
+    :root {
+      --navy:#0f1e3d; --navy-mid:#182d54; --navy-light:#223c70;
+      --red:#c0142a; --red-light:#e8354d; --red-pale:#fde8eb;
+      --white:#ffffff; --off-white:#f5f6f8; --gray:#6b7280; --gray-light:#e5e7eb;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Barlow', sans-serif; background: var(--off-white); color: var(--navy); overflow-x: hidden; }
+    .en-text { display: none !important; }
+    body.lang-en .fr-text { display: none !important; }
+    body.lang-en .en-text { display: revert !important; }
+
+    .lang-bar { background: var(--navy); display: flex; justify-content: flex-end; align-items: center; padding: 5px 28px; gap: 6px; }
+    .lang-btn { background: none; border: 1.5px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.6); font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; padding: 3px 11px; border-radius: 3px; cursor: pointer; transition: all 0.18s; }
+    .lang-btn.active, .lang-btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+
+    header { background: var(--navy); }
+    header::after { content: ''; display: block; height: 4px; background: linear-gradient(90deg, var(--navy) 0%, var(--red) 30%, var(--red-light) 50%, var(--red) 70%, var(--navy) 100%); }
+    .header-inner { display: flex; align-items: center; justify-content: center; padding: 24px 28px 20px; }
+    .logo-img { height: 175px; width: auto; display: block; filter: drop-shadow(0 4px 18px rgba(192,20,42,0.35)) drop-shadow(0 2px 8px rgba(0,0,0,0.5)); transition: transform 0.2s ease; }
+    .logo-img:hover { transform: scale(1.03); }
+
+    nav { background: var(--navy-mid); border-bottom: 3px solid var(--red); }
+    .nav-inner { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; padding: 0 12px; }
+    .nav-inner a { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.8); text-decoration: none; padding: 13px 15px; transition: all 0.18s; position: relative; white-space: nowrap; }
+    .nav-inner a:hover, .nav-inner a.active { color: var(--red-light); background: rgba(192,20,42,0.08); }
+    .nav-inner a.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--red); }
+
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 24px 64px; }
+    .breadcrumb { font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 0.08em; font-size: 13px; font-weight: 700; color: var(--gray); margin-bottom: 18px; }
+    .breadcrumb a { color: var(--gray); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--red); }
+    .breadcrumb span.sep { margin: 0 7px; color: var(--gray-light); }
+
+    /* HERO */
+    .hero { display: grid; grid-template-columns: 230px 1fr; gap: 28px; align-items: start; background: var(--navy); border-radius: 12px; overflow: hidden; border-left: 5px solid var(--red); }
+    .hero-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; background: var(--navy-mid); display: block; }
+    .hero-initials { width: 100%; aspect-ratio: 3/4; background: var(--navy-mid); display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 84px; color: var(--red-light); }
+    .hero-body { padding: 28px 30px 28px 4px; color: #fff; }
+    .hero-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 22px; color: var(--red-light); letter-spacing: 0.05em; }
+    .hero-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(34px, 6vw, 56px); line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; margin: 2px 0 10px; }
+    .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .tag { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.06em; padding: 4px 11px; border-radius: 99px; }
+    .tag.pos { background: var(--red); color: #fff; }
+    .tag.cap { background: #fff; color: var(--navy); }
+    .tag.aff { background: rgba(255,255,255,0.15); color: #fff; }
+
+    .bio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 14px 22px; }
+    .bio-item .k { font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 700; }
+    .bio-item .v { font-size: 16px; font-weight: 600; color: #fff; margin-top: 1px; }
+
+    /* TOP STATS PILLS */
+    .pills { display: flex; gap: 14px; flex-wrap: wrap; margin: 26px 0 4px; }
+    .pill { background: #fff; border: 1px solid var(--gray-light); border-top: 3px solid var(--red); border-radius: 8px; padding: 12px 20px; min-width: 92px; text-align: center; }
+    .pill .pv { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 30px; color: var(--navy); line-height: 1; }
+    .pill .pk { font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; color: var(--gray); font-weight: 700; margin-top: 4px; }
+
+    /* STATS TABLES */
+    .stats-block { margin-top: 30px; }
+    .stats-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+    .stats-head h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; font-size: 18px; border-left: 4px solid var(--red); padding-left: 10px; }
+    .stats-head .season { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; color: var(--gray); font-size: 14px; letter-spacing: 0.05em; }
+    .stable-scroll { overflow-x: auto; border: 1px solid var(--gray-light); border-radius: 6px; }
+    table.stat { width: 100%; border-collapse: collapse; background: #fff; font-size: 14px; }
+    table.stat th { background: var(--navy-mid); color: rgba(255,255,255,0.7); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 12px; text-align: center; white-space: nowrap; }
+    table.stat td { padding: 10px 12px; text-align: center; white-space: nowrap; border-top: 1px solid var(--gray-light); font-variant-numeric: tabular-nums; }
+
+    .bio-text { margin-top: 26px; font-size: 15px; line-height: 1.7; color: var(--navy); max-width: 760px; }
+    .no-stats { margin-top: 26px; color: var(--gray); font-style: italic; }
+    .state { text-align: center; padding: 60px 20px; }
+    .spinner { display: inline-block; width: 30px; height: 30px; border: 3px solid var(--gray-light); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .back { display: inline-block; margin-top: 10px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--red); text-decoration: none; }
+
+    footer { background: var(--navy); border-top: 4px solid var(--red); padding: 32px 28px 20px; margin-top: 40px; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 28px; margin-bottom: 24px; }
+    .footer-logo { height: 72px; width: auto; margin-bottom: 10px; border-radius: 6px; }
+    .footer-col-title { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red-light); margin-bottom: 10px; }
+    .footer-col p, .footer-col a { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.9; text-decoration: none; display: block; }
+    .footer-col a:hover { color: var(--red-light); }
+    .footer-bottom { max-width: 1100px; margin: 0 auto; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .footer-bottom p { font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.04em; }
+
+    @media (min-width: 1400px) {
+      .header-inner { padding: 24px 48px 20px; }
+      .nav-inner a { font-size: 15px; padding: 15px 20px; }
+      .wrap { max-width: 1380px; padding: 40px 48px 72px; }
+      .footer-inner, .footer-bottom { max-width: 1380px; }
+    }
+    @media (min-width: 1800px) {
+      .header-inner { padding: 28px 80px 24px; } .logo-img { height: 195px; }
+      .nav-inner a { font-size: 16px; padding: 16px 24px; }
+      .wrap { max-width: 1680px; padding: 48px 80px 88px; }
+      .footer-inner { max-width: 1680px; padding: 0 80px; } .footer-bottom { max-width: 1680px; padding-left: 80px; padding-right: 80px; }
+    }
+    @media (max-width: 700px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-photo, .hero-initials { aspect-ratio: 16/10; }
+      .hero-body { padding: 22px; }
+      .footer-inner { grid-template-columns: 1fr; gap: 16px; }
+    }
+  </style>
+</head>
+<body class="lang-fr">
+
+  <div class="lang-bar">
+    <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <header>
+    <div class="header-inner">
+      <a href="index.html"><img src="diamantslogo.png" alt="Diamants de Québec" class="logo-img"></a>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html"><span class="fr-text">Accueil</span><span class="en-text">Home</span></a>
+      <a href="calendrier.html"><span class="fr-text">Calendrier</span><span class="en-text">Schedule</span></a>
+      <a href="roster.html" class="active"><span class="fr-text">Alignement</span><span class="en-text">Roster</span></a>
+      <a href="diffusion.html"><span class="fr-text">Diffusion en direct</span><span class="en-text">Live Stream</span></a>
+      <a href="#"><span class="fr-text">Médias Sociaux</span><span class="en-text">Social Media</span></a>
+      <a href="#"><span class="fr-text">Contact</span><span class="en-text">Contact</span></a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="breadcrumb">
+      <a href="roster.html"><span class="fr-text">Alignement</span><span class="en-text">Roster</span></a>
+      <span class="sep">›</span><span id="crumb-name">…</span>
+    </div>
+    <div id="content">
+      <div class="state"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-col">
+        <img src="diamantslogo.png" alt="Diamants de Québec" class="footer-logo">
+        <p>Diamants de Québec<br>Québec, Canada</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Navigation</div>
+        <a href="index.html"><span class="fr-text">Accueil</span><span class="en-text">Home</span></a>
+        <a href="calendrier.html"><span class="fr-text">Calendrier</span><span class="en-text">Schedule</span></a>
+        <a href="roster.html"><span class="fr-text">Alignement</span><span class="en-text">Roster</span></a>
+        <a href="diffusion.html"><span class="fr-text">Diffusion en direct</span><span class="en-text">Live Stream</span></a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Contact</div>
+        <p>diamantsdequebec.ca</p>
+        <a href="#">Facebook</a><a href="#">YouTube</a><a href="#">Instagram</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Diamants de Québec &mdash; <span class="fr-text">Tous droits réservés.</span><span class="en-text">All rights reserved.</span></p>
+      <p class="fr-text">Conçu avec fierté à Québec, Canada</p>
+      <p class="en-text">Proudly built in Québec, Canada</p>
+    </div>
+  </footer>
+
+<script>
+  (function(){ var s = localStorage.getItem('lang'); if (s === 'en') setLang('en'); })();
+
+  const API = 'https://diamants-roster-worker.chisholm2000.workers.dev';
+  const POS = {
+    P:  { fr:'Lanceur',    en:'Pitcher' },
+    C:  { fr:'Receveur',   en:'Catcher' },
+    IF: { fr:'Avant-champ',en:'Infielder' },
+    OF: { fr:'Voltigeur',  en:'Outfielder' },
+  };
+  // Scout "top stats" — first present key wins, per stat type.
+  const TOP_BAT = [['AVG','MOY'],['OPS','OPS'],['HR','CIR'],['RBI','PP'],['OBP','OBP'],['SB','BV']];
+  const TOP_PIT = [['ERA','MPM'],['SO','RET'],['W','V'],['IP','MAN'],['WHIP','WHIP'],['SV','SV']];
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function ftHeight(inches){ if(inches==null||inches==='') return null; const ft=Math.floor(inches/12); return ft+"' "+(inches%12)+'"'; }
+  function ageFrom(bd){ if(!bd) return null; const d=new Date(bd+'T12:00:00Z'); if(isNaN(d)) return null; const n=new Date(); let a=n.getUTCFullYear()-d.getUTCFullYear(); const m=n.getUTCMonth()-d.getUTCMonth(); if(m<0||(m===0&&n.getUTCDate()<d.getUTCDate())) a--; return a; }
+  function lower(o){ const m={}; for(const k in o) m[k.toLowerCase()]=o[k]; return m; }
+  function latestSeason(stats){ const ys=Object.keys(stats||{}).filter(y=>/^\d{4}$/.test(y)); return ys.sort().pop(); }
+
+  function pills(season, sj){
+    const out=[];
+    const add=(obj, defs)=>{ if(!obj) return; const lo=lower(obj);
+      for(const [key,fr] of defs){ const v=lo[key.toLowerCase()]; if(v!=null && v!=='' ){ out.push({k:fr,v}); } if(out.length>=4) break; } };
+    add(sj.batting, TOP_BAT);
+    if(out.length<4) add(sj.pitching, TOP_PIT);
+    if(!out.length) return '';
+    return '<div class="pills">'+out.slice(0,4).map(p=>`<div class="pill"><div class="pv">${esc(p.v)}</div><div class="pk">${esc(p.k)}</div></div>`).join('')+'</div>';
+  }
+
+  function statTable(obj, titleFr, titleEn, season){
+    if(!obj || !Object.keys(obj).length) return '';
+    const cols=Object.keys(obj);
+    return `<div class="stats-block">
+      <div class="stats-head"><h2><span class="fr-text">${titleFr}</span><span class="en-text">${titleEn}</span></h2><span class="season">${esc(season)}</span></div>
+      <div class="stable-scroll"><table class="stat">
+        <thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead>
+        <tbody><tr>${cols.map(c=>`<td>${esc(obj[c])}</td>`).join('')}</tr></tbody>
+      </table></div></div>`;
+  }
+
+  function render(p){
+    document.getElementById('crumb-name').textContent = p.first_name+' '+p.last_name;
+    document.title = `${p.first_name} ${p.last_name} — Diamants de Québec`;
+
+    const photo = p.photo_key
+      ? `<img class="hero-photo" src="${API}/photos/${encodeURIComponent(p.photo_key)}" alt="${esc(p.first_name+' '+p.last_name)}">`
+      : `<div class="hero-initials">${esc((p.first_name[0]||'')+(p.last_name[0]||''))}</div>`;
+
+    const posg = POS[p.position_group] || {fr:p.position_group,en:p.position_group};
+    const tags = [`<span class="tag pos"><span class="fr-text">${posg.fr}</span><span class="en-text">${posg.en}</span></span>`];
+    if(p.is_captain)   tags.push(`<span class="tag cap"><span class="fr-text">Capitaine</span><span class="en-text">Captain</span></span>`);
+    if(p.is_affiliate) tags.push(`<span class="tag aff"><span class="fr-text">Affilié</span><span class="en-text">Affiliate</span></span>`);
+
+    const bio=[];
+    const item=(kfr,ken,v)=> v ? bio.push(`<div class="bio-item"><div class="k"><span class="fr-text">${kfr}</span><span class="en-text">${ken}</span></div><div class="v">${esc(v)}</div></div>`) : null;
+    if(p.positions && p.positions!==p.position_group) item('Positions','Positions',p.positions);
+    item('Frappe / Lancer','Bats / Throws', p.bats_throws);
+    item('Taille','Height', ftHeight(p.height_inches));
+    item('Poids','Weight', p.weight ? p.weight+' lb' : null);
+    const age=ageFrom(p.birthdate); item('Âge','Age', age!=null?age+' ans / yo':null);
+    const town=[p.hometown_city,p.hometown_state].filter(Boolean).join(', '); item('Provenance','Hometown', town);
+    item('École / Équipe','School / Team', p.provenance);
+
+    let statsHtml='';
+    const sj = (()=>{ try{ return p.stats_json?JSON.parse(p.stats_json):null; }catch{ return null; } })();
+    if(sj){
+      const yr=latestSeason(sj);
+      if(yr && sj[yr]){
+        const s=sj[yr];
+        statsHtml = pills(yr,s)
+          + statTable(s.batting, 'Statistiques au bâton', 'Batting statistics', yr)
+          + statTable(s.pitching,'Statistiques au monticule','Pitching statistics', yr);
+      }
+    }
+    if(!statsHtml) statsHtml = `<p class="no-stats"><span class="fr-text">Statistiques à venir.</span><span class="en-text">Statistics coming soon.</span></p>`;
+
+    const bioText = (p.bio_fr || p.bio_en)
+      ? `<div class="bio-text"><span class="fr-text">${esc(p.bio_fr||p.bio_en)}</span><span class="en-text">${esc(p.bio_en||p.bio_fr)}</span></div>` : '';
+
+    document.getElementById('content').innerHTML = `
+      <div class="hero">
+        <div>${photo}</div>
+        <div class="hero-body">
+          ${p.number?`<div class="hero-num">#${esc(p.number)}</div>`:''}
+          <div class="hero-name">${esc(p.first_name)} ${esc(p.last_name)}</div>
+          <div class="hero-tags">${tags.join('')}</div>
+          <div class="bio-grid">${bio.join('')}</div>
+        </div>
+      </div>
+      ${statsHtml}
+      ${bioText}`;
+  }
+
+  (async () => {
+    const slug = new URLSearchParams(location.search).get('slug');
+    const box = document.getElementById('content');
+    if(!slug){ box.innerHTML = `<div class="state"><p class="fr-text">Aucun joueur indiqué.</p><p class="en-text">No player specified.</p><a class="back" href="roster.html">← Alignement</a></div>`; return; }
+    try{
+      const r = await fetch(`${API}/api/players/${encodeURIComponent(slug)}`, { cache:'no-store' });
+      if(r.status===404){ box.innerHTML = `<div class="state"><p class="fr-text">Joueur introuvable.</p><p class="en-text">Player not found.</p><a class="back" href="roster.html">← Alignement</a></div>`; return; }
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      render(await r.json());
+    }catch(e){
+      box.innerHTML = `<div class="state"><p class="fr-text">Erreur de chargement.</p><p class="en-text">Failed to load.</p><a class="back" href="roster.html">← Alignement</a></div>`;
+    }
+  })();
+</script>
+</body>
+</html>
