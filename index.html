@@ -910,7 +910,7 @@
           if (p.date) { const dt = new Date(String(p.date).replace(' ','T')); if (!isNaN(dt)) dateStr = dt.toLocaleDateString(lang==='en'?'en-CA':'fr-CA', { year:'numeric', month:'long', day:'numeric' }); }
           const title = String(p.title||'').replace(/[<>]/g,'');
           const img = p.image
-            ? `<img src="${p.image}" alt="" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=this.src.replace('cdn.spordle.com','spordle-filestorage-public.s3.ca-central-1.amazonaws.com')}else{this.style.display='none'}">`
+            ? `<img src="${GC_WORKER}/api/img?u=${encodeURIComponent(p.image)}" alt="" loading="lazy" onerror="this.style.display='none'">`
             : '';
           return `<a href="${p.href}" target="_blank" rel="noopener" class="news-card">
             <div class="news-img-wrap">

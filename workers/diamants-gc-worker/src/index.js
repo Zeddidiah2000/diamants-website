@@ -150,7 +150,7 @@ async function refreshNews(env, lang = 'fr') {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
     const url = new URL(request.url);
     const path = url.pathname;
@@ -171,6 +171,33 @@ export default {
         if (t && t.avatar_image) return Response.redirect(t.avatar_image, 302);
         return new Response('Not found', { status: 404, headers: cors });
       }
+      // Image proxy: re-serve a Spordle image with a correct image/* content-type
+      // (Spordle serves them as application/octet-stream, which browsers won't always
+      // render inline). Cached at our edge. Locked to Spordle hosts (not an open proxy).
+      if (path === '/api/img') {
+        const u = url.searchParams.get('u');
+        if (!u) return new Response('missing u', { status: 400, headers: cors });
+        let target;
+        try { target = new URL(u); } catch { return new Response('bad u', { status: 400, headers: cors }); }
+        const ALLOWED = new Set(['cdn.spordle.com', 'spordle-filestorage-public.s3.ca-central-1.amazonaws.com']);
+        if (!ALLOWED.has(target.hostname)) return new Response('forbidden host', { status: 403, headers: cors });
+        const cache = caches.default;
+        const cacheKey = new Request(request.url);
+        let resp = await cache.match(cacheKey);
+        if (!resp) {
+          let up = await fetch(target.toString());
+          if (!up.ok && target.hostname === 'cdn.spordle.com') {
+            up = await fetch(target.toString().replace('cdn.spordle.com', 'spordle-filestorage-public.s3.ca-central-1.amazonaws.com'));
+          }
+          if (!up.ok) return new Response('upstream ' + up.status, { status: 502, headers: cors });
+          const ext = (target.pathname.split('.').pop() || '').toLowerCase();
+          const ct = (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : ext === 'webp' ? 'image/webp' : ext === 'gif' ? 'image/gif' : 'image/png';
+          resp = new Response(up.body, { headers: { 'Content-Type': ct, 'Cache-Control': 'public, max-age=86400', ...cors } });
+          ctx.waitUntil(cache.put(cacheKey, resp.clone()));
+        }
+        return resp;
+      }
+
       if (path === '/api/news') {
         const lang = (url.searchParams.get('lang') || 'fr').toLowerCase() === 'en' ? 'en' : 'fr';
         if (!env.SPORDLE_PAGE_ID || !env.SPORDLE_PAGE_API_KEY) return json({ items: [], configured: false });
