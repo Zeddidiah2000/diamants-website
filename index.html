@@ -909,9 +909,9 @@
           let dateStr = '';
           if (p.date) { const dt = new Date(String(p.date).replace(' ','T')); if (!isNaN(dt)) dateStr = dt.toLocaleDateString(lang==='en'?'en-CA':'fr-CA', { year:'numeric', month:'long', day:'numeric' }); }
           const title = String(p.title||'').replace(/[<>]/g,'');
-          return `<a href="${p.href}" target="_blank" rel="noopener" class="news-card">
+          return `<a href="${p.href}" target="_blank" rel="noopener" class="news-card" style="display:block">
             <div class="news-body">
-              <div class="news-meta">${dateStr} · Spordle</div>
+              <div class="news-meta">${dateStr} · LBJEQ</div>
               <div class="news-title">${title}</div>
               <span class="news-read-more"><span class="fr-text">Lire sur Spordle →</span><span class="en-text">Read on Spordle →</span></span>
             </div>

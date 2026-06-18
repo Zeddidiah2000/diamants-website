@@ -15,6 +15,8 @@ const TEAM = 'KzOMwA29XZzU';   // Diamants de Québec
 const GAMES_TTL = 90_000;      // near-live during games
 const STAND_TTL = 300_000;
 const TEAMS_TTL = 240_000;     // < GC signed-avatar lifetime so logo redirects stay valid
+const NEWS_TTL  = 15 * 60_000; // Spordle league news (cached — the full feed is ~6MB)
+const SPORDLE_SLUG = 'ligue-de-baseball-junior-elite-du-quebec'; // LBJEQ league page (posts often)
 
 const cors = {
   'Access-Control-Allow-Origin':  '*',
@@ -107,6 +109,29 @@ async function refreshStandings(env) {
   return rows;
 }
 
+// Spordle league news. The API returns ~3000 items oldest-first (~6MB), so we sort
+// newest-first here and keep the top 8; the /api/news handler caches the result.
+async function refreshNews(env, lang = 'fr') {
+  const r = await fetch(`https://api.page.spordle.com/pages/${env.SPORDLE_PAGE_ID}/custom-pages?display_lang=${lang}&type=NEWS`, {
+    headers: { 'Accept': 'application/json', 'Origin': 'https://page.spordle.com', 'Referer': 'https://page.spordle.com/', 'x-api-key': env.SPORDLE_PAGE_API_KEY },
+  });
+  if (!r.ok) return null;
+  const d = await r.json();
+  const arr = Array.isArray(d) ? d : (d.custom_pages || d.data || d.records || []);
+  if (!Array.isArray(arr)) return null;
+  return arr
+    .filter(p => p.published_date && (p.is_published === undefined || p.is_published))
+    .sort((a, b) => new Date(b.published_date) - new Date(a.published_date))
+    .slice(0, 8)
+    .map(p => ({
+      id:    p.custom_page_id || p.id,
+      title: (p.i18n && p.i18n[lang] && p.i18n[lang].name) || p.name || p.title || '',
+      date:  p.published_date || '',
+      href:  `https://page.spordle.com/${lang}/${SPORDLE_SLUG}/news/${p.custom_page_id || p.id}`,
+    }))
+    .filter(x => x.title);
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
@@ -130,25 +155,18 @@ export default {
         return new Response('Not found', { status: 404, headers: cors });
       }
       if (path === '/api/news') {
-        const lang = (url.searchParams.get('lang') || 'fr').toLowerCase();
+        const lang = (url.searchParams.get('lang') || 'fr').toLowerCase() === 'en' ? 'en' : 'fr';
         if (!env.SPORDLE_PAGE_ID || !env.SPORDLE_PAGE_API_KEY) return json({ items: [], configured: false });
-        try {
-          const r = await fetch(`https://api.page.spordle.com/pages/${env.SPORDLE_PAGE_ID}/custom-pages?display_lang=${lang}&type=NEWS`, {
-            headers: { 'Accept': 'application/json', 'Origin': 'https://page.spordle.com', 'Referer': 'https://page.spordle.com/', 'x-api-key': env.SPORDLE_PAGE_API_KEY },
-          });
-          if (!r.ok) return json({ items: [], configured: true, error: 'spordle ' + r.status });
-          const d = await r.json();
-          const arr = Array.isArray(d) ? d : (d.data || d.custom_pages || d.records || []);
-          const items = (Array.isArray(arr) ? arr : []).slice(0, 6).map(p => ({
-            id:    p.custom_page_id || p.id,
-            title: (p.i18n && p.i18n[lang] && p.i18n[lang].name) || p.name || p.title || '',
-            date:  p.published_date || p.created_at || '',
-            href:  `https://page.spordle.com/${lang}/diamants-de-quebec/news/${p.custom_page_id || p.id}`,
-          })).filter(x => x.title);
-          return json({ items, configured: true });
-        } catch (e) {
-          return json({ items: [], configured: true, error: String(e) });
-        }
+        const key = `news:${lang}`;
+        let cached = null;
+        try { cached = await env.GC.get(key, 'json'); } catch {}
+        if (cached && (Date.now() - cached.ts) < NEWS_TTL) return json({ items: cached.data, configured: true });
+        let data = null;
+        try { data = await refreshNews(env, lang); } catch {}
+        if ((!data || !data.length) && cached) return json({ items: cached.data, configured: true }); // preserve
+        if (!data) return json({ items: cached ? cached.data : [], configured: true, error: 'fetch failed' });
+        try { await env.GC.put(key, JSON.stringify({ data, ts: Date.now() })); } catch {}
+        return json({ items: data, configured: true });
       }
       if (path === '/health' || path === '/') {
         return json({ ok: true, service: 'diamants-gc-worker' });
