@@ -380,7 +380,7 @@
           isHome,
           opp:        g.opponent_name || '?',
           oppId:      g.opponent_id || null,
-          oppLogoUrl: g.opponent_id ? `${GC_WORKER}/api/team-logo/${g.opponent_id}` : null,
+          oppLogoUrl: g.opponent_id ? `assets/team-logos/${g.opponent_id}.png` : null,
           status:     (g.status || 'scheduled').toLowerCase(),
           ourScore:   g.our_score != null ? g.our_score : null,
           oppScore:   g.opp_score != null ? g.opp_score : null,
@@ -482,7 +482,7 @@
           </div>
           <div class="opp-logo-wrap">
             ${g.oppLogoUrl
-              ? `<img src="${g.oppLogoUrl}" alt="${g.opp}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+              ? `<img src="${g.oppLogoUrl}" alt="${g.opp}" loading="lazy" data-oppid="${g.oppId || ''}" onerror="if(!this.dataset.f&&this.dataset.oppid){this.dataset.f=1;this.src='${GC_WORKER}/api/team-logo/'+this.dataset.oppid}else{this.style.display='none';this.nextElementSibling.style.display='flex'}">`
               : ''}
             <div class="opp-logo-placeholder" style="display:${g.oppLogoUrl ? 'none' : 'flex'}">${oppInitials}</div>
           </div>

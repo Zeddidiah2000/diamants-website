@@ -167,9 +167,10 @@
       <th><span class="fr-text">Série</span><span class="en-text">Strk</span></th>
     </tr>`;
     const body = rows.map((r,i)=>{
-      // Same logo source as calendrier.html: the gc-worker proxy keyed by team_id,
-      // which 302s to the team's current signed GC avatar. Initials show only on error.
-      const logo = `<span class="logo-box"><img class="team-logo" src="${GC_WORKER}/api/team-logo/${r.team_id}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="team-logo-ph" style="display:none">${initials(r.name)}</span></span>`;
+      // Static mirrored logos (assets/team-logos/<gc_team_id>.png) — GC avatars are
+      // signed/expiring, so we serve permanent copies. Fallback: worker proxy (fresh
+      // signed avatar, e.g. a new team) → initials.
+      const logo = `<span class="logo-box"><img class="team-logo" src="assets/team-logos/${r.team_id}.png" alt="" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${GC_WORKER}/api/team-logo/${r.team_id}'}else{this.style.display='none';this.nextElementSibling.style.display='flex'}"><span class="team-logo-ph" style="display:none">${initials(r.name)}</span></span>`;
       const pct = (typeof r.pct==='number') ? r.pct.toFixed(3).replace(/^0/,'') : '—';
       const diffCls = r.diff>0?'diff-pos':r.diff<0?'diff-neg':'';
       const diffTxt = r.diff>0?`+${r.diff}`:`${r.diff}`;
