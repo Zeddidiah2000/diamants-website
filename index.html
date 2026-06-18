@@ -909,7 +909,14 @@
           let dateStr = '';
           if (p.date) { const dt = new Date(String(p.date).replace(' ','T')); if (!isNaN(dt)) dateStr = dt.toLocaleDateString(lang==='en'?'en-CA':'fr-CA', { year:'numeric', month:'long', day:'numeric' }); }
           const title = String(p.title||'').replace(/[<>]/g,'');
-          return `<a href="${p.href}" target="_blank" rel="noopener" class="news-card" style="display:block">
+          const img = p.image
+            ? `<img src="${p.image}" alt="" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=this.src.replace('cdn.spordle.com','spordle-filestorage-public.s3.ca-central-1.amazonaws.com')}else{this.style.display='none'}">`
+            : '';
+          return `<a href="${p.href}" target="_blank" rel="noopener" class="news-card">
+            <div class="news-img-wrap">
+              <div class="news-img-placeholder"><svg width="60" height="60" viewBox="0 0 60 60" fill="none"><path d="M30 5L55 25V55H5V25L30 5Z" stroke="white" stroke-width="3" fill="none"/><circle cx="30" cy="35" r="8" stroke="white" stroke-width="3" fill="none"/></svg></div>
+              ${img}
+            </div>
             <div class="news-body">
               <div class="news-meta">${dateStr} · LBJEQ</div>
               <div class="news-title">${title}</div>

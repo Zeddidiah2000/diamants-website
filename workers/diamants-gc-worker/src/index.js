@@ -110,26 +110,43 @@ async function refreshStandings(env) {
 }
 
 // Spordle league news. The API returns ~3000 items oldest-first (~6MB), so we sort
-// newest-first here and keep the top 8; the /api/news handler caches the result.
+// newest-first here, keep the top 6, and fetch each article's banner image (the list
+// has none — it lives in the detail under page_attachments[*].object_url). Cached by
+// the /api/news handler.
+const spHeaders = (env) => ({ 'Accept': 'application/json', 'Origin': 'https://page.spordle.com', 'Referer': 'https://page.spordle.com/', 'x-api-key': env.SPORDLE_PAGE_API_KEY });
+
+async function newsImage(env, id, lang) {
+  try {
+    const r = await fetch(`https://api.page.spordle.com/pages/${env.SPORDLE_PAGE_ID}/custom-pages/${id}?display_lang=${lang}`, { headers: spHeaders(env) });
+    if (!r.ok) return null;
+    const d = await r.json();
+    const atts = d.page_attachments || {};
+    for (const k in atts) { const u = atts[k] && atts[k].object_url; if (u) return u; }
+  } catch {}
+  return null;
+}
+
 async function refreshNews(env, lang = 'fr') {
-  const r = await fetch(`https://api.page.spordle.com/pages/${env.SPORDLE_PAGE_ID}/custom-pages?display_lang=${lang}&type=NEWS`, {
-    headers: { 'Accept': 'application/json', 'Origin': 'https://page.spordle.com', 'Referer': 'https://page.spordle.com/', 'x-api-key': env.SPORDLE_PAGE_API_KEY },
-  });
+  const r = await fetch(`https://api.page.spordle.com/pages/${env.SPORDLE_PAGE_ID}/custom-pages?display_lang=${lang}&type=NEWS`, { headers: spHeaders(env) });
   if (!r.ok) return null;
   const d = await r.json();
   const arr = Array.isArray(d) ? d : (d.custom_pages || d.data || d.records || []);
   if (!Array.isArray(arr)) return null;
-  return arr
+  const top = arr
     .filter(p => p.published_date && (p.is_published === undefined || p.is_published))
     .sort((a, b) => new Date(b.published_date) - new Date(a.published_date))
-    .slice(0, 8)
-    .map(p => ({
-      id:    p.custom_page_id || p.id,
+    .slice(0, 6);
+  const items = await Promise.all(top.map(async p => {
+    const id = p.custom_page_id || p.id;
+    return {
+      id,
       title: (p.i18n && p.i18n[lang] && p.i18n[lang].name) || p.name || p.title || '',
       date:  p.published_date || '',
-      href:  `https://page.spordle.com/${lang}/${SPORDLE_SLUG}/news/${p.custom_page_id || p.id}`,
-    }))
-    .filter(x => x.title);
+      image: await newsImage(env, id, lang),
+      href:  `https://page.spordle.com/${lang}/${SPORDLE_SLUG}/news/${id}`,
+    };
+  }));
+  return items.filter(x => x.title);
 }
 
 export default {
@@ -157,7 +174,7 @@ export default {
       if (path === '/api/news') {
         const lang = (url.searchParams.get('lang') || 'fr').toLowerCase() === 'en' ? 'en' : 'fr';
         if (!env.SPORDLE_PAGE_ID || !env.SPORDLE_PAGE_API_KEY) return json({ items: [], configured: false });
-        const key = `news:${lang}`;
+        const key = `news2:${lang}`; // bump when the news item shape changes
         let cached = null;
         try { cached = await env.GC.get(key, 'json'); } catch {}
         if (cached && (Date.now() - cached.ts) < NEWS_TTL) return json({ items: cached.data, configured: true });
