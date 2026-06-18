@@ -190,9 +190,9 @@
     IF: { fr:'Avant-champ',en:'Infielder' },
     OF: { fr:'Voltigeur',  en:'Outfielder' },
   };
-  // Scout "top stats" — first present key wins, per stat type.
-  const TOP_BAT = [['AVG','MOY'],['OPS','OPS'],['HR','CIR'],['RBI','PP'],['OBP','OBP'],['SB','BV']];
-  const TOP_PIT = [['ERA','MPM'],['SO','RET'],['W','V'],['IP','MAN'],['WHIP','WHIP'],['SV','SV']];
+  // Scout "top stats" — first present key wins, per stat type. [gcKey, frLabel, enLabel]
+  const TOP_BAT = [['AVG','MOY','AVG'],['OPS','OPS','OPS'],['HR','CIR','HR'],['RBI','PP','RBI'],['OBP','OBP','OBP'],['SB','BV','SB']];
+  const TOP_PIT = [['ERA','MPM','ERA'],['SO','RET','SO'],['W','V','W'],['IP','MAN','IP'],['WHIP','WHIP','WHIP'],['SV','SV','SV']];
 
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
   function ftHeight(inches){ if(inches==null||inches==='') return null; const ft=Math.floor(inches/12); return ft+"' "+(inches%12)+'"'; }
@@ -203,11 +203,11 @@
   function pills(season, sj){
     const out=[];
     const add=(obj, defs)=>{ if(!obj) return; const lo=lower(obj);
-      for(const [key,fr] of defs){ const v=lo[key.toLowerCase()]; if(v!=null && v!=='' ){ out.push({k:fr,v}); } if(out.length>=4) break; } };
+      for(const [key,fr,en] of defs){ const v=lo[key.toLowerCase()]; if(v!=null && v!=='' ){ out.push({kfr:fr,ken:en,v}); } if(out.length>=4) break; } };
     add(sj.batting, TOP_BAT);
     if(out.length<4) add(sj.pitching, TOP_PIT);
     if(!out.length) return '';
-    return '<div class="pills">'+out.slice(0,4).map(p=>`<div class="pill"><div class="pv">${esc(p.v)}</div><div class="pk">${esc(p.k)}</div></div>`).join('')+'</div>';
+    return '<div class="pills">'+out.slice(0,4).map(p=>`<div class="pill"><div class="pv">${esc(p.v)}</div><div class="pk"><span class="fr-text">${esc(p.kfr)}</span><span class="en-text">${esc(p.ken)}</span></div></div>`).join('')+'</div>';
   }
 
   function statTable(obj, titleFr, titleEn, season){
@@ -240,7 +240,8 @@
     item('Frappe / Lancer','Bats / Throws', p.bats_throws);
     item('Taille','Height', ftHeight(p.height_inches));
     item('Poids','Weight', p.weight ? p.weight+' lb' : null);
-    const age=ageFrom(p.birthdate); item('Âge','Age', age!=null?age+' ans / yo':null);
+    const age=ageFrom(p.birthdate);
+    if(age!=null) bio.push(`<div class="bio-item"><div class="k"><span class="fr-text">Âge</span><span class="en-text">Age</span></div><div class="v"><span class="fr-text">${age} ans</span><span class="en-text">${age} yo</span></div></div>`);
     const town=[p.hometown_city,p.hometown_state].filter(Boolean).join(', '); item('Provenance','Hometown', town);
     item('École / Équipe','School / Team', p.provenance);
 
