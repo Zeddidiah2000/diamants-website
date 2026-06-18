@@ -55,6 +55,7 @@
     td.rank{ font-family:'Barlow Condensed',sans-serif; font-weight:800; color:var(--gray); width:36px; }
     td.team-col{ text-align:left; }
     .team-cell{ display:flex; align-items:center; gap:10px; }
+    .logo-box{ width:26px; height:26px; flex:0 0 auto; display:inline-flex; }
     .team-logo{ width:26px; height:26px; object-fit:contain; flex:0 0 auto; }
     .team-logo-ph{ width:26px; height:26px; border-radius:4px; background:var(--navy-mid); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:11px; flex:0 0 auto; }
     .team-name{ font-weight:600; }
@@ -166,9 +167,9 @@
       <th><span class="fr-text">Série</span><span class="en-text">Strk</span></th>
     </tr>`;
     const body = rows.map((r,i)=>{
-      const logo = r.logo_id
-        ? `<img class="team-logo" src="${GC_WORKER}/api/team-logo/${r.logo_id}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'team-logo-ph',textContent:'${initials(r.name)}'}))">`
-        : `<span class="team-logo-ph">${initials(r.name)}</span>`;
+      // Same logo source as calendrier.html: the gc-worker proxy keyed by team_id,
+      // which 302s to the team's current signed GC avatar. Initials show only on error.
+      const logo = `<span class="logo-box"><img class="team-logo" src="${GC_WORKER}/api/team-logo/${r.team_id}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="team-logo-ph" style="display:none">${initials(r.name)}</span></span>`;
       const pct = (typeof r.pct==='number') ? r.pct.toFixed(3).replace(/^0/,'') : '—';
       const diffCls = r.diff>0?'diff-pos':r.diff<0?'diff-neg':'';
       const diffTxt = r.diff>0?`+${r.diff}`:`${r.diff}`;
