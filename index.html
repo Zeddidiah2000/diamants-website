@@ -634,6 +634,31 @@
   <div class="main-layout">
     <!-- MAIN COLUMN -->
     <main>
+      <!-- Facebook feed (primary, full main column) -->
+      <div class="section-title">
+        <span class="fr-text">Facebook <span class="muted">· Publications récentes</span></span>
+        <span class="en-text">Facebook <span class="muted">· Recent posts</span></span>
+      </div>
+      <div id="fb-root"></div>
+      <div id="fb-posts-preview" style="margin-bottom:26px;">
+        <div class="fb-page"
+             data-href="https://www.facebook.com/diamantsquebec"
+             data-tabs="timeline"
+             data-width="500"
+             data-height="700"
+             data-small-header="false"
+             data-adapt-container-width="true"
+             data-hide-cover="false"
+             data-show-facepile="true">
+          <blockquote cite="https://www.facebook.com/diamantsquebec" class="fb-xfbml-parse-ignore">
+            <a href="https://www.facebook.com/diamantsquebec">Diamants de Québec</a>
+          </blockquote>
+        </div>
+      </div>
+      <script async defer crossorigin="anonymous"
+        src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v19.0"></script>
+
+      <!-- News (moved below the Facebook feed) -->
       <div class="section-title">
         <span class="fr-text">Actualités <span class="muted">· Nouvelles récentes</span></span>
         <span class="en-text">News <span class="muted">· Latest updates</span></span>
@@ -752,32 +777,6 @@
             Instagram
           </a>
         </div>
-      </div>
-
-      <!-- Facebook Posts Preview -->
-      <div class="sidebar-card">
-        <div class="sidebar-card-header">
-          <span class="fr-text">Publications récentes</span>
-          <span class="en-text">Recent Posts</span>
-        </div>
-        <div id="fb-root"></div>
-        <div id="fb-posts-preview" style="display:flex;justify-content:center;">
-          <div class="fb-page"
-               data-href="https://www.facebook.com/diamantsquebec"
-               data-tabs="timeline"
-               data-width="340"
-               data-height="640"
-               data-small-header="true"
-               data-adapt-container-width="true"
-               data-hide-cover="false"
-               data-show-facepile="true">
-            <blockquote cite="https://www.facebook.com/diamantsquebec" class="fb-xfbml-parse-ignore">
-              <a href="https://www.facebook.com/diamantsquebec">Diamants de Québec</a>
-            </blockquote>
-          </div>
-        </div>
-        <script async defer crossorigin="anonymous"
-          src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v19.0"></script>
       </div>
 
     </aside>
