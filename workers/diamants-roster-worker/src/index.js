@@ -272,9 +272,18 @@ export default {
         if (!player) return json({ error: 'Not found' }, 404);
         let stats = {};
         try { stats = player.stats_json ? JSON.parse(player.stats_json) : {}; } catch { stats = {}; }
+        // Column-level merge: a new upload adds/updates columns without wiping
+        // ones from a previous screenshot. Blank cells don't clobber existing values.
+        const mergeStat = (prev, next) => {
+          const out = { ...(prev || {}) };
+          for (const [k, v] of Object.entries(next || {})) {
+            if (v !== '' && v != null) out[k] = v;
+          }
+          return out;
+        };
         stats[season] = stats[season] || {};
-        if (body.batting  && typeof body.batting  === 'object') stats[season].batting  = body.batting;
-        if (body.pitching && typeof body.pitching === 'object') stats[season].pitching = body.pitching;
+        if (body.batting  && typeof body.batting  === 'object') stats[season].batting  = mergeStat(stats[season].batting,  body.batting);
+        if (body.pitching && typeof body.pitching === 'object') stats[season].pitching = mergeStat(stats[season].pitching, body.pitching);
         await env.DB.prepare("UPDATE players SET stats_json = ?, updated_at = datetime('now') WHERE id = ?")
           .bind(JSON.stringify(stats), id).run();
         const row = await env.DB.prepare('SELECT * FROM players WHERE id = ?').bind(id).first();
