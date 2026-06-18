@@ -57,10 +57,10 @@
       <div class="row">
         <div>
           <label for="file">Capture d'écran (PNG / JPG, max 5 Mo)</label>
-          <input type="file" id="file" accept="image/png,image/jpeg,image/webp">
+          <input type="file" id="file" accept="image/*">
         </div>
         <div style="flex:0 0 auto">
-          <button class="btn" id="parseBtn" disabled>Lire la capture</button>
+          <button class="btn" id="parseBtn">Lire la capture</button>
         </div>
       </div>
       <img id="preview" style="max-width:100%;margin-top:14px;border-radius:8px;display:none">
@@ -98,7 +98,7 @@ let players = [];
 let parsed  = null;
 
 const $ = (id) => document.getElementById(id);
-function msg(text, kind){ const m=$('msg'); m.textContent=text; m.className=kind; if(!text) m.style.display='none'; }
+function msg(text, kind){ const m=$('msg'); m.textContent=text; m.className=kind; if(!text){ m.style.display='none'; } else { m.scrollIntoView({behavior:'smooth',block:'center'}); } }
 
 function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,'').trim(); }
 
@@ -133,20 +133,24 @@ async function whoAmI(){
 
 $('file').addEventListener('change', () => {
   const f = $('file').files[0];
-  $('parseBtn').disabled = !f;
   if (f){ const u=URL.createObjectURL(f); $('preview').src=u; $('preview').style.display='block'; }
 });
 
 $('parseBtn').addEventListener('click', async () => {
-  const f = $('file').files[0]; if (!f) return;
-  if (f.size > 5*1024*1024){ msg('Image trop grande (max 5 Mo).','err'); return; }
+  const f = $('file').files[0];
+  if (!f){ msg('Choisis d\'abord une capture (bouton ci-dessus).','err'); return; }
+  const type = f.type || '';
+  if (/hei[cf]/i.test(type) || /\.hei[cf]$/i.test(f.name||'')){
+    msg('Format HEIC non supporté. Sur iPhone : prends une CAPTURE D\'ÉCRAN du tableau (PNG), pas une photo.','err'); return;
+  }
+  if (f.size > 5*1024*1024){ msg('Image trop grande ('+(f.size/1048576).toFixed(1)+' Mo, max 5 Mo).','err'); return; }
   msg('','');
   $('parseBtn').disabled = true;
   $('parseBtn').innerHTML = '<span class="spinner"></span>Lecture…';
   try{
     const r = await fetch(`${API}/stats/parse`, {
       method:'POST', credentials:'include',
-      headers:{ 'Content-Type': f.type },
+      headers:{ 'Content-Type': type || 'image/png' },
       body: f,
     });
     const data = await r.json();
