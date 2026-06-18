@@ -67,6 +67,36 @@
       border-color: var(--red);
       color: #fff;
     }
+    .admin-link {
+      margin-right: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: none;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.6);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 3px 11px;
+      border-radius: 3px;
+      transition: all 0.18s;
+    }
+    .admin-link:hover {
+      border-color: var(--red);
+      color: #fff;
+    }
+    .admin-diamond {
+      width: 7px;
+      height: 7px;
+      background: var(--red);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+      box-shadow: 0 0 6px rgba(192,20,42,0.7);
+    }
 
     /* HEADER */
     header {
@@ -550,6 +580,7 @@
 <body class="lang-fr">
 
   <div class="lang-bar">
+    <a class="admin-link" href="/admin"><span class="admin-diamond"></span>Admin</a>
     <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
     <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
   </div>
