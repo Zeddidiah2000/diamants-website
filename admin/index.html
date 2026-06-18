@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin · Diamants de Québec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── VARIABLES ───────────────────────────────────────────────────── */
+    :root {
+      --navy:        #0f1e3d;
+      --navy-mid:    #182d54;
+      --navy-light:  #223c70;
+      --red:         #c0142a;
+      --red-light:   #e8354d;
+      --red-bright:  #ff3b54;
+      --white:       #ffffff;
+
+      --surface:     #0a1430;
+      --text-light:  #dbe4f5;
+      --border:      rgba(232,53,77,0.18);
+      --border-hi:   rgba(232,53,77,0.40);
+      --text-dim:    rgba(219,228,245,0.48);
+      --text-mid:    rgba(219,228,245,0.74);
+
+      --glow:        rgba(255,59,84,0.18);
+      --glow-hi:     rgba(255,59,84,0.38);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--surface);
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── GEOMETRIC BACKGROUND ────────────────────────────────────────── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    #bg-canvas::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(34,60,112,0.75) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 55% at 82% 82%, rgba(192,20,42,0.30) 0%, transparent 55%),
+        radial-gradient(ellipse 100% 80% at 50% 50%, #060d22 30%, #0a1430 100%);
+    }
+
+    #bg-canvas::after {
+      content: '';
+      position: absolute;
+      inset: -20%;
+      width: 140%;
+      height: 140%;
+      opacity: 0.05;
+      background-image:
+        linear-gradient(rgba(150,180,230,0.8) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(150,180,230,0.8) 1px, transparent 1px);
+      background-size: 60px 60px;
+      transform: rotate(-8deg) scale(1.3);
+    }
+
+    #bg-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .bg-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.14;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+    .bg-blob-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #223c70, transparent 70%);
+      top: -150px; left: -100px;
+      animation-delay: 0s;
+    }
+    .bg-blob-2 {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, #c0142a, transparent 70%);
+      bottom: -120px; right: -100px;
+      opacity: 0.12;
+      animation-delay: -6s;
+    }
+    .bg-blob-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #ff3b54, transparent 70%);
+      top: 42%; left: 60%;
+      opacity: 0.08;
+      animation-delay: -12s;
+    }
+
+    @keyframes drift {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.08); }
+    }
+
+    /* ── BILINGUAL ───────────────────────────────────────────────────── */
+    .en-text { display: none !important; }
+    body.lang-en .fr-text { display: none !important; }
+    body.lang-en .en-text { display: revert !important; }
+
+    .lang-bar, #identity-screen, #admin-screen { position: relative; z-index: 1; }
+
+    /* ── LANG BAR ────────────────────────────────────────────────────── */
+    .lang-bar {
+      background: rgba(10, 20, 48, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 6px 28px;
+      gap: 6px;
+      border-bottom: 1px solid rgba(232,53,77,0.12);
+    }
+    .lang-btn {
+      background: none;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.5);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 2px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .lang-btn.active, .lang-btn:hover {
+      background: var(--red);
+      border-color: var(--red);
+      color: var(--white);
+    }
+
+    /* ── IDENTITY SCREEN ─────────────────────────────────────────────── */
+    #identity-screen {
+      min-height: calc(100vh - 40px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .login-logo {
+      width: 110px;
+      height: 110px;
+      background: linear-gradient(135deg, rgba(192,20,42,0.18) 0%, rgba(34,60,112,0.35) 100%);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(232,53,77,0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: 0 0 40px rgba(255,59,84,0.18), inset 0 1px 0 rgba(255,255,255,0.1);
+      animation: logo-pulse 4s ease-in-out infinite alternate;
+      overflow: hidden;
+    }
+
+    @keyframes logo-pulse {
+      0%   { box-shadow: 0 0 30px rgba(255,59,84,0.12), inset 0 1px 0 rgba(255,255,255,0.08); }
+      100% { box-shadow: 0 0 64px rgba(255,59,84,0.28), inset 0 1px 0 rgba(255,255,255,0.15); }
+    }
+
+    .login-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--white);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .login-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .login-box {
+      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.012) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(232,53,77,0.22);
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    }
+    .login-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--red-light) 0%, var(--red) 100%);
+      color: var(--white);
+      border: none;
+      border-radius: 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(192,20,42,0.35);
+    }
+    .login-btn:hover {
+      background: linear-gradient(135deg, var(--red-bright) 0%, var(--red-light) 100%);
+      box-shadow: 0 6px 30px rgba(255,59,84,0.45);
+      transform: translateY(-1px);
+    }
+    .login-btn:active { transform: scale(0.98); }
+
+    /* ── ADMIN SCREEN ────────────────────────────────────────────────── */
+    #admin-screen { display: none; }
+
+    .btn-ghost {
+      background: rgba(232,53,77,0.06);
+      backdrop-filter: blur(4px);
+      border: 1.5px solid var(--border-hi);
+      color: var(--text-light);
+      border-radius: 5px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .btn-ghost:hover {
+      background: rgba(232,53,77,0.14);
+      border-color: var(--red-light);
+      box-shadow: 0 0 12px rgba(255,59,84,0.18);
+    }
+
+    /* ── TILE GRID ───────────────────────────────────────────────────── */
+    .tile-grid-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px;
+    }
+
+    .tile-grid-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .tile-grid-header h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 34px;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin: 0;
+      text-shadow: 0 0 40px rgba(255,59,84,0.3);
+    }
+
+    .tile-grid-subhead {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 36px;
+      letter-spacing: 0.06em;
+    }
+
+    .tile-section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: 28px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tile-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(232,53,77,0.25) 0%, transparent 100%);
+    }
+
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── GLASS CARD — ACTIVE ─────────────────────────────────────────── */
+    .tile {
+      background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.015) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(232,53,77,0.22);
+      border-radius: 14px;
+      padding: 22px;
+      min-height: 168px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    /* top edge highlight */
+    .tile::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 40%, rgba(255,59,84,0.45) 60%, transparent 100%);
+    }
+
+    /* sheen swipe on hover */
+    .tile::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 80%;
+      height: 200%;
+      background: linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
+      transition: left 0.5s ease;
+    }
+
+    .tile:not(.tile-coming-soon):hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.5), 0 0 28px rgba(255,59,84,0.22);
+      border-color: rgba(255,59,84,0.5);
+      background: linear-gradient(135deg, rgba(192,20,42,0.14) 0%, rgba(255,255,255,0.02) 100%);
+    }
+
+    .tile:not(.tile-coming-soon):hover::after { left: 80%; }
+
+    /* ── COMING SOON — RECESSED ──────────────────────────────────────── */
+    .tile-coming-soon {
+      opacity: 0.5;
+      filter: grayscale(0.35);
+      background: rgba(0,0,0,0.18);
+      border: 1px dashed rgba(232,53,77,0.18);
+      box-shadow: none;
+      pointer-events: none;
+    }
+    .tile-coming-soon::before { display: none; }
+    .tile-coming-soon::after  { display: none; }
+
+    /* ── TILE ICON ───────────────────────────────────────────────────── */
+    .tile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .tile-icon {
+      position: relative;
+      color: var(--red-light);
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+    .tile-icon svg { width: 100%; height: 100%; position: relative; z-index: 1; }
+
+    .tile-icon::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px; height: 50px;
+      background: radial-gradient(circle, rgba(255,59,84,0.30) 0%, rgba(255,59,84,0) 70%);
+      filter: blur(6px);
+      z-index: 0;
+      transition: opacity 0.3s;
+    }
+    .tile:not(.tile-coming-soon):hover .tile-icon::after { opacity: 1.6; }
+
+    .tile-coming-soon .tile-icon { color: var(--text-dim); }
+    .tile-coming-soon .tile-icon::after { display: none; }
+
+    /* ── STATUS CHIP ─────────────────────────────────────────────────── */
+    .tile-chip {
+      font-size: 10px;
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+    .tile-chip.chip-active { background: rgba(255,59,84,0.16); color: #ff8a9b; border: 1px solid rgba(255,59,84,0.3); }
+    .tile-chip.chip-soon   { background: rgba(150,180,230,0.1); color: var(--text-mid); border: 1px solid rgba(150,180,230,0.18); }
+
+    /* ── TILE TEXT ───────────────────────────────────────────────────── */
+    .tile-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 21px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
+    .tile-desc {
+      font-size: 13px;
+      color: var(--text-mid);
+      flex: 1;
+      line-height: 1.5;
+    }
+    .tile-cta {
+      font-size: 13px;
+      color: var(--red-light);
+      font-weight: 700;
+      margin-top: 4px;
+      letter-spacing: 0.04em;
+      transition: color 0.18s;
+    }
+    .tile:not(.tile-coming-soon):hover .tile-cta { color: var(--red-bright); }
+    .tile-coming-soon .tile-cta { color: var(--text-dim); }
+
+    @media (max-width: 600px) {
+      .tile-grid-container { padding: 16px; }
+      .tile-grid { grid-template-columns: 1fr; }
+      .tile-grid-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ BACKGROUND ══════════════ -->
+<div id="bg-canvas">
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+  <svg id="bg-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="rgba(150,180,230,0.06)" stroke-width="1" fill="none">
+      <line x1="-100" y1="0" x2="600"  y2="900"/>
+      <line x1="100"  y1="0" x2="800"  y2="900"/>
+      <line x1="350"  y1="0" x2="1050" y2="900"/>
+      <line x1="600"  y1="0" x2="1300" y2="900"/>
+      <line x1="900"  y1="0" x2="1600" y2="900"/>
+      <line x1="1200" y1="0" x2="1900" y2="900"/>
+    </g>
+    <!-- diamond motif (Diamants) -->
+    <g stroke="rgba(255,59,84,0.10)" stroke-width="1" fill="none">
+      <rect x="1300" y="40"  width="56" height="56" transform="rotate(45 1328 68)"/>
+      <rect x="1370" y="130" width="36" height="36" transform="rotate(45 1388 148)"/>
+      <rect x="80"  y="700" width="52" height="52" transform="rotate(45 106 726)"/>
+      <rect x="150" y="790" width="32" height="32" transform="rotate(45 166 806)"/>
+    </g>
+    <g stroke="rgba(150,180,230,0.08)" stroke-width="0.5" fill="none">
+      <rect x="1340" y="20" width="40" height="40" transform="rotate(45 1360 40)"/>
+      <rect x="1360" y="60" width="28" height="28" transform="rotate(45 1374 74)"/>
+      <rect x="1310" y="60" width="20" height="20" transform="rotate(45 1320 70)"/>
+    </g>
+  </svg>
+</div>
+
+<div class="lang-bar">
+  <button class="lang-btn" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- ══════════════ IDENTITY SCREEN ══════════════ -->
+<div id="identity-screen">
+  <div class="login-logo">
+    <img src="/diamantslogo.png" alt="Diamants de Québec" style="width:74px;height:74px;object-fit:contain;">
+  </div>
+  <div class="login-title">
+    <span class="fr-text">Bienvenue</span>
+    <span class="en-text">Welcome</span>
+  </div>
+  <div class="login-sub">
+    <span class="fr-text">Portail Admin · Diamants de Québec</span>
+    <span class="en-text">Admin Portal · Diamants de Québec</span>
+  </div>
+  <div class="login-box" id="identity-box">
+    <div id="identity-loading" style="text-align:center;padding:16px 0;color:var(--text-dim);font-size:13px;letter-spacing:0.08em;">
+      <span class="fr-text">Vérification de l'identité…</span>
+      <span class="en-text">Verifying identity…</span>
+    </div>
+    <div id="identity-info" style="display:none;">
+      <div style="margin-bottom:28px;">
+        <div class="login-label">
+          <span class="fr-text">Connecté en tant que</span>
+          <span class="en-text">Signed in as</span>
+        </div>
+        <div id="identity-email" style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text-light);padding:10px 0;border-bottom:1px solid var(--border);word-break:break-all;"></div>
+      </div>
+      <button class="login-btn" onclick="enterPortal()">
+        <span class="fr-text">Entrer →</span>
+        <span class="en-text">Enter →</span>
+      </button>
+    </div>
+    <div id="identity-error" style="display:none;text-align:center;padding:16px 0;">
+      <div style="color:#ff8a9b;font-size:13px;margin-bottom:12px;">
+        <span class="fr-text">Accès non autorisé.</span>
+        <span class="en-text">Access not authorized.</span>
+      </div>
+      <a href="/" style="color:var(--red-light);font-size:12px;text-decoration:none;">
+        <span class="fr-text">← Retour au site</span>
+        <span class="en-text">← Back to site</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ADMIN ══════════════ -->
+<div id="admin-screen">
+  <div class="tile-grid-container">
+
+    <div class="tile-grid-header">
+      <h1>
+        <span class="fr-text">Portail admin</span>
+        <span class="en-text">Admin Portal</span>
+      </h1>
+      <div style="font-size:13px;color:var(--text-mid);display:flex;align-items:center;gap:10px;">
+        <span id="current-email" style="font-family:'JetBrains Mono',monospace;font-size:12px;opacity:0.8;"></span>
+        <button onclick="doLogout()" class="btn-ghost">
+          <span class="fr-text">Déconnexion</span><span class="en-text">Sign out</span>
+        </button>
+      </div>
+    </div>
+
+    <p class="tile-grid-subhead">
+      <span class="fr-text">Diamants de Québec · Non-officiel · outils administrateurs</span>
+      <span class="en-text">Diamants de Québec · Unofficial · admin tools</span>
+    </p>
+
+    <div class="tile-section-title">
+      <span class="fr-text">Outils actifs</span>
+      <span class="en-text">Active Tools</span>
+    </div>
+    <div id="section-active" class="tile-grid"></div>
+
+    <div class="tile-section-title">
+      <span class="fr-text">Bientôt disponibles</span>
+      <span class="en-text">Coming Soon</span>
+    </div>
+    <div id="section-upcoming" class="tile-grid"></div>
+
+  </div>
+</div>
+
+<script>
+const TILES = [
+  {
+    href: '/admin/stats.html',
+    icon: 'chart',
+    titleFr: 'Statistiques',
+    titleEn: 'Stats',
+    descFr: 'Téléverse une capture GameChanger ; l\'IA lit le tableau, tu valides, et les stats sont enregistrées sur les fiches joueurs.',
+    descEn: 'Upload a GameChanger screenshot; AI reads the table, you confirm, and stats are saved to player profiles.',
+    status: 'active',
+    phase: null
+  },
+  {
+    href: null,
+    icon: 'user',
+    titleFr: 'Éditeur d\'alignement',
+    titleEn: 'Roster Editor',
+    descFr: 'Ajouter, modifier ou supprimer des joueurs. Photos, positions, numéros.',
+    descEn: 'Add, edit, or remove players. Photos, positions, numbers.',
+    status: 'coming-soon',
+    phase: 'Phase E'
+  },
+  {
+    href: null,
+    icon: 'camera',
+    titleFr: 'Galerie photos',
+    titleEn: 'Photo Gallery',
+    descFr: 'Téléverser des photos de matchs. Alimentera la page galerie publique.',
+    descEn: 'Upload game photos. Will power the public gallery page.',
+    status: 'coming-soon',
+    phase: 'Galerie'
+  },
+  {
+    href: null,
+    icon: 'video',
+    titleFr: 'Diffusion',
+    titleEn: 'Broadcast',
+    descFr: 'Lier les diffusions et rediffusions Cloudflare Stream aux matchs.',
+    descEn: 'Link Cloudflare Stream live broadcasts and replays to games.',
+    status: 'coming-soon',
+    phase: 'Diffusion'
+  }
+];
+
+// ── LANG ─────────────────────────────────────────────────────────────
+function setLang(lang) {
+  document.body.className = 'lang-' + lang;
+  document.documentElement.lang = lang;
+  const btnFr = document.getElementById('btn-fr');
+  const btnEn = document.getElementById('btn-en');
+  if (btnFr) btnFr.classList.toggle('active', lang === 'fr');
+  if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+  localStorage.setItem('lang', lang);
+}
+
+// ── AUTH (Cloudflare Access — the /admin prefix is already gated) ──────
+async function initAuth() {
+  setLang(localStorage.getItem('lang') || 'fr');
+  try {
+    const res = await fetch('/cdn-cgi/access/get-identity', { credentials: 'include' });
+    if (!res.ok) { showIdentityError(); return; }
+    const identity = await res.json();
+    const email = (identity.email || '').toLowerCase().trim();
+    if (!email) { showIdentityError(); return; }
+
+    document.getElementById('identity-email').textContent = email;
+    document.getElementById('current-email').textContent = email;
+
+    if (location.hash === '#portal' || sessionStorage.getItem('adminEntered') === '1') {
+      enterPortal();
+    } else {
+      document.getElementById('identity-loading').style.display = 'none';
+      document.getElementById('identity-info').style.display = 'block';
+    }
+  } catch (e) {
+    showIdentityError();
+  }
+}
+
+function showIdentityError() {
+  document.getElementById('identity-loading').style.display = 'none';
+  document.getElementById('identity-error').style.display = 'block';
+}
+
+function enterPortal() {
+  sessionStorage.setItem('adminEntered', '1');
+  document.getElementById('identity-screen').style.display = 'none';
+  document.getElementById('admin-screen').style.display = 'block';
+  renderTiles();
+}
+
+function doLogout() {
+  sessionStorage.removeItem('adminEntered');
+  // Clear the Cloudflare Access session, then bounce home.
+  window.location.href = '/cdn-cgi/access/logout';
+}
+
+// ── TILE RENDERING ─────────────────────────────────────────────────────
+function renderTiles() {
+  renderTileSection('section-active',   TILES.filter(t => t.status === 'active'));
+  renderTileSection('section-upcoming', TILES.filter(t => t.status === 'coming-soon'));
+}
+
+function renderTileSection(containerId, tiles) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  for (const tile of tiles) {
+    const isActive = tile.status === 'active';
+    const div = document.createElement('div');
+    div.className = 'tile' + (isActive ? '' : ' tile-coming-soon');
+
+    const chip = isActive
+      ? `<span class="tile-chip chip-active"><span class="fr-text">Actif</span><span class="en-text">Active</span></span>`
+      : `<span class="tile-chip chip-soon">${escapeHtml(tile.phase || '')}</span>`;
+
+    div.innerHTML =
+      `<div class="tile-header">` +
+        `<div class="tile-icon">${getIconSvg(tile.icon)}</div>` +
+        chip +
+      `</div>` +
+      `<div class="tile-title">` +
+        `<span class="fr-text">${escapeHtml(tile.titleFr)}</span>` +
+        `<span class="en-text">${escapeHtml(tile.titleEn)}</span>` +
+      `</div>` +
+      `<div class="tile-desc">` +
+        `<span class="fr-text">${escapeHtml(tile.descFr)}</span>` +
+        `<span class="en-text">${escapeHtml(tile.descEn)}</span>` +
+      `</div>` +
+      `<div class="tile-cta">` +
+        (isActive
+          ? `<span class="fr-text">Ouvrir →</span><span class="en-text">Open →</span>`
+          : `<span class="fr-text">Bientôt</span><span class="en-text">Coming soon</span>`
+        ) +
+      `</div>`;
+
+    if (isActive) {
+      div.style.cursor = 'pointer';
+      div.addEventListener('click', () => { window.location.href = tile.href; });
+    }
+    container.appendChild(div);
+  }
+}
+
+// ── ICONS ───────────────────────────────────────────────────────────────
+function getIconSvg(name) {
+  const icons = {
+    chart:
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">` +
+        `<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>` +
+      `</svg>`,
+    user:
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">` +
+        `<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>` +
+      `</svg>`,
+    camera:
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">` +
+        `<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>` +
+      `</svg>`,
+    video:
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">` +
+        `<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>` +
+      `</svg>`,
+  };
+  return icons[name] || '';
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────
+initAuth();
+</script>
+</body>
+</html>
