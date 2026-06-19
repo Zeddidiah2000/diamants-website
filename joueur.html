@@ -194,6 +194,20 @@
   const TOP_BAT = [['AVG','MOY','AVG'],['OPS','OPS','OPS'],['HR','CIR','HR'],['RBI','PP','RBI'],['OBP','OBP','OBP'],['SB','BV','SB']];
   const TOP_PIT = [['ERA','MPM','ERA'],['SO','RET','SO'],['W','V','W'],['IP','MAN','IP'],['WHIP','WHIP','WHIP'],['SV','SV','SV']];
 
+  // Conventional GameChanger/MLB column order. Unknown columns keep feed order at the end.
+  const BAT_ORDER = ['GP','G','PA','AB','R','H','1B','2B','3B','HR','RBI','BB','IBB','HBP','SO','K','SB','CS','AVG','OBP','SLG','OPS','TB','XBH','SAC','SF','SH','GIDP','GDP','ROE','FC','PIK','BABIP'];
+  const PIT_ORDER = ['APP','GP','G','GS','GF','CG','SHO','QS','W','L','SV','SVO','BS','HLD','IP','H','R','ER','HR','BB','IBB','HBP','SO','K','WP','BK','ERA','WHIP','BAA','OBA','FIP','BF','P/IP','GO','FO'];
+  function orderCols(cols, order){
+    const idx={}; order.forEach((c,i)=>{ idx[c.toLowerCase()]=i; });
+    return cols.slice().sort((a,b)=>{
+      const ia=idx[a.toLowerCase()], ib=idx[b.toLowerCase()];
+      if(ia==null && ib==null) return cols.indexOf(a)-cols.indexOf(b);
+      if(ia==null) return 1;
+      if(ib==null) return -1;
+      return ia-ib;
+    });
+  }
+
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
   function ftHeight(inches){ if(inches==null||inches==='') return null; const ft=Math.floor(inches/12); return ft+"' "+(inches%12)+'"'; }
   function ageFrom(bd){ if(!bd) return null; const d=new Date(bd+'T12:00:00Z'); if(isNaN(d)) return null; const n=new Date(); let a=n.getUTCFullYear()-d.getUTCFullYear(); const m=n.getUTCMonth()-d.getUTCMonth(); if(m<0||(m===0&&n.getUTCDate()<d.getUTCDate())) a--; return a; }
@@ -210,9 +224,9 @@
     return '<div class="pills">'+out.slice(0,4).map(p=>`<div class="pill"><div class="pv">${esc(p.v)}</div><div class="pk"><span class="fr-text">${esc(p.kfr)}</span><span class="en-text">${esc(p.ken)}</span></div></div>`).join('')+'</div>';
   }
 
-  function statTable(obj, titleFr, titleEn, season){
+  function statTable(obj, titleFr, titleEn, season, order){
     if(!obj || !Object.keys(obj).length) return '';
-    const cols=Object.keys(obj);
+    const cols=orderCols(Object.keys(obj), order||[]);
     return `<div class="stats-block">
       <div class="stats-head"><h2><span class="fr-text">${titleFr}</span><span class="en-text">${titleEn}</span></h2><span class="season">${esc(season)}</span></div>
       <div class="stable-scroll"><table class="stat">
@@ -252,8 +266,8 @@
       if(yr && sj[yr]){
         const s=sj[yr];
         statsHtml = pills(yr,s)
-          + statTable(s.batting, 'Statistiques au bâton', 'Batting statistics', yr)
-          + statTable(s.pitching,'Statistiques au monticule','Pitching statistics', yr);
+          + statTable(s.batting, 'Statistiques au bâton', 'Batting statistics', yr, BAT_ORDER)
+          + statTable(s.pitching,'Statistiques au monticule','Pitching statistics', yr, PIT_ORDER);
       }
     }
     if(!statsHtml) statsHtml = `<p class="no-stats"><span class="fr-text">Statistiques à venir.</span><span class="en-text">Statistics coming soon.</span></p>`;
