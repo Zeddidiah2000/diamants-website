@@ -17,3 +17,6 @@ Thumbs.db
 **/.cf-token.txt
 **/.anthropic-key.txt
 **/seed.sql
+
+# LBJEQ stats source copy (generated into assets/stats-leaders.json)
+stats/
