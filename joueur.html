@@ -200,6 +200,8 @@
   // Conventional GameChanger/MLB column order. Unknown columns keep feed order at the end.
   const BAT_ORDER = ['GP','G','PA','AB','R','H','1B','2B','3B','HR','RBI','BB','IBB','HBP','SO','K','SB','CS','AVG','OBP','SLG','OPS','TB','XBH','SAC','SF','SH','GIDP','GDP','ROE','FC','PIK','BABIP'];
   const PIT_ORDER = ['APP','GP','G','GS','GF','CG','SHO','QS','W','L','SV','SVO','BS','HLD','IP','H','R','ER','HR','BB','IBB','HBP','SO','K','WP','BK','ERA','WHIP','BAA','OBA','FIP','BF','P/IP','GO','FO'];
+  // Catcher defense (only catchers get a catching block). INN = innings caught.
+  const CATCH_ORDER = ['INN','PO','A','E','DP','FPCT','PB','SB','CS','CS%','PIK','CI'];
   function orderCols(cols, order){
     const idx={}; order.forEach((c,i)=>{ idx[c.toLowerCase()]=i; });
     return cols.slice().sort((a,b)=>{
@@ -270,7 +272,8 @@
         const s=sj[yr];
         statsHtml = pills(yr,s)
           + statTable(s.batting, 'Statistiques au bâton', 'Batting statistics', yr, BAT_ORDER)
-          + statTable(s.pitching,'Statistiques au monticule','Pitching statistics', yr, PIT_ORDER);
+          + statTable(s.pitching,'Statistiques au monticule','Pitching statistics', yr, PIT_ORDER)
+          + statTable(s.catching,'Statistiques défensives (receveur)','Catching statistics', yr, CATCH_ORDER);
       }
     }
     if(!statsHtml) statsHtml = `<p class="no-stats"><span class="fr-text">Statistiques à venir.</span><span class="en-text">Statistics coming soon.</span></p>`;

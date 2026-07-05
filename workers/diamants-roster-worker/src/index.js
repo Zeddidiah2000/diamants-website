@@ -284,6 +284,7 @@ export default {
         stats[season] = stats[season] || {};
         if (body.batting  && typeof body.batting  === 'object') stats[season].batting  = mergeStat(stats[season].batting,  body.batting);
         if (body.pitching && typeof body.pitching === 'object') stats[season].pitching = mergeStat(stats[season].pitching, body.pitching);
+        if (body.catching && typeof body.catching === 'object') stats[season].catching = mergeStat(stats[season].catching, body.catching);
         await env.DB.prepare("UPDATE players SET stats_json = ?, updated_at = datetime('now') WHERE id = ?")
           .bind(JSON.stringify(stats), id).run();
         const row = await env.DB.prepare('SELECT * FROM players WHERE id = ?').bind(id).first();
