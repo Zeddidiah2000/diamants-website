@@ -27,26 +27,34 @@ function Put($h,$k,$v){ if($null -ne $v){ $h[$k]=$v } }
 $roster = Invoke-RestMethod "$API/api/players" -TimeoutSec 30
 $bat = Import-Csv (Join-Path $root 'stats\LBJEQ_Diamants_de_Qu_bec_batting.csv')
 $def = Import-Csv (Join-Path $root 'stats\LBJEQ_Diamants_de_Qu_bec_pitching_fielding.csv')
+$batByNum = @{}; foreach($b in $bat){ $batByNum["$($b.Number)"] = $b }
 $defByNum = @{}; foreach($d in $def){ $defByNum["$($d.Number)"] = $d }
 
+# Union of everyone with a batting OR a defense row — pure pitchers (DH league)
+# have NO batting row, so iterating the batting CSV alone drops them.
+$allNums = @(); foreach($n in (@($bat | ForEach-Object { "$($_.Number)" }) + @($def | ForEach-Object { "$($_.Number)" }))){
+  if($n -ne '' -and $allNums -notcontains $n){ $allNums += $n } }
+
 $updated=0; $unmatched=@()
-foreach($r in $bat){
-  $num = "$($r.Number)"
+foreach($num in $allNums){
+  $r = $batByNum[$num]; $d = $defByNum[$num]
+  $srcName = if($r){ $r.Player } elseif($d){ $d.Player } else { $num }
   $pl = $roster | Where-Object { [int]$_.number -eq [int]$num } | Select-Object -First 1
-  if(-not $pl){ $pl = $roster | Where-Object { "$($_.first_name) $($_.last_name)".Trim() -eq $r.Player.Trim() } | Select-Object -First 1 }
-  if(-not $pl){ $unmatched += "#$num $($r.Player)"; continue }
+  if(-not $pl){ $pl = $roster | Where-Object { "$($_.first_name) $($_.last_name)".Trim() -eq $srcName.Trim() } | Select-Object -First 1 }
+  if(-not $pl){ $unmatched += "#$num $srcName"; continue }
 
-  $batting = [ordered]@{}
-  Put $batting 'GP' (Cnt $r.GP); Put $batting 'PA' (Cnt $r.PA); Put $batting 'AB' (Cnt $r.AB)
-  Put $batting 'R' (Cnt $r.R); Put $batting 'H' (Cnt $r.H)
-  Put $batting '1B' (Cnt $r.'1B'); Put $batting '2B' (Cnt $r.'2B'); Put $batting '3B' (Cnt $r.'3B')
-  Put $batting 'HR' (Cnt $r.HR); Put $batting 'RBI' (Cnt $r.RBI); Put $batting 'BB' (Cnt $r.BB)
-  Put $batting 'SO' (Cnt $r.SO); Put $batting 'HBP' (Cnt $r.HBP); Put $batting 'SB' (Cnt $r.SB); Put $batting 'CS' (Cnt $r.CS)
-  Put $batting 'AVG' (Rate3 $r.AVG); Put $batting 'OBP' (Rate3 $r.OBP); Put $batting 'SLG' (Rate3 $r.SLG); Put $batting 'OPS' (Rate3 $r.OPS)
-
-  $body = [ordered]@{ season=$SEASON; batting=$batting }
-  $tags = @('bat')
-  $d = $defByNum[$num]
+  $body = [ordered]@{ season=$SEASON }
+  $tags = @()
+  if($r){
+    $batting = [ordered]@{}
+    Put $batting 'GP' (Cnt $r.GP); Put $batting 'PA' (Cnt $r.PA); Put $batting 'AB' (Cnt $r.AB)
+    Put $batting 'R' (Cnt $r.R); Put $batting 'H' (Cnt $r.H)
+    Put $batting '1B' (Cnt $r.'1B'); Put $batting '2B' (Cnt $r.'2B'); Put $batting '3B' (Cnt $r.'3B')
+    Put $batting 'HR' (Cnt $r.HR); Put $batting 'RBI' (Cnt $r.RBI); Put $batting 'BB' (Cnt $r.BB)
+    Put $batting 'SO' (Cnt $r.SO); Put $batting 'HBP' (Cnt $r.HBP); Put $batting 'SB' (Cnt $r.SB); Put $batting 'CS' (Cnt $r.CS)
+    Put $batting 'AVG' (Rate3 $r.AVG); Put $batting 'OBP' (Rate3 $r.OBP); Put $batting 'SLG' (Rate3 $r.SLG); Put $batting 'OPS' (Rate3 $r.OPS)
+    $body.batting = $batting; $tags += 'bat'
+  }
   if($d){
     $ip = ToNum $d.IP
     if($ip -ne $null -and $ip -gt 0){
@@ -67,6 +75,8 @@ foreach($r in $bat){
     }
   }
 
+  if($tags.Count -eq 0){ continue }   # no batting, pitching, or catching — skip
+
   $json = $body | ConvertTo-Json -Depth 5 -Compress
   try {
     Invoke-RestMethod "$API/api/players/$($pl.id)/stats" -Method PUT -Headers @{ Authorization = "Bearer $token" } -ContentType 'application/json' -Body $json -TimeoutSec 30 | Out-Null
@@ -74,4 +84,4 @@ foreach($r in $bat){
     "  OK  #{0,-3} {1,-24} [{2}]" -f $num, "$($pl.first_name) $($pl.last_name)", ($tags -join '+')
   } catch { "  ERR #$num $($pl.first_name) $($pl.last_name): $($_.Exception.Message)" }
 }
-"`nUpdated $updated / $($bat.Count).  Unmatched: $($unmatched -join ', ')"
+"`nUpdated $updated / $($allNums.Count).  Unmatched: $($unmatched -join ', ')"
