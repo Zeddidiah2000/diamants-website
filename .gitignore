@@ -20,3 +20,6 @@ Thumbs.db
 
 # LBJEQ stats source copy (generated into assets/stats-leaders.json)
 stats/
+
+# Claude Code skills — encode the GC scrape method + account UUIDs; keep private (public repo)
+.claude/
