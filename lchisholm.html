@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>L. Chisholm — Diamants de Québec</title>
+  <meta name="description" content="Profil lanceur — L. Chisholm, Diamants de Québec / Pitching profile — L. Chisholm, Diamants de Québec">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    function setLang(lang) {
+      document.body.className = 'lang-' + lang;
+      document.documentElement.lang = lang;
+      document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      localStorage.setItem('lang', lang);
+    }
+  </script>
+  <style>
+    :root {
+      --navy:#0f1e3d; --navy-mid:#182d54; --navy-light:#223c70;
+      --red:#c0142a; --red-light:#e8354d; --red-pale:#fde8eb;
+      --white:#ffffff; --off-white:#f5f6f8; --gray:#6b7280; --gray-light:#e5e7eb;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Barlow', sans-serif; background: var(--off-white); color: var(--navy); overflow-x: hidden; }
+    .fr-text { display: none !important; }
+    body.lang-fr .fr-text { display: revert !important; }
+    body.lang-fr .en-text { display: none !important; }
+
+    .lang-bar { background: var(--navy); display: flex; justify-content: flex-end; align-items: center; padding: 5px 28px; gap: 6px; }
+    .lang-btn { background: none; border: 1.5px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.6); font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; padding: 3px 11px; border-radius: 3px; cursor: pointer; transition: all 0.18s; }
+    .lang-btn.active, .lang-btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+
+    header { background: var(--navy); }
+    header::after { content: ''; display: block; height: 4px; background: linear-gradient(90deg, var(--navy) 0%, var(--red) 30%, var(--red-light) 50%, var(--red) 70%, var(--navy) 100%); }
+    .header-inner { display: flex; align-items: center; justify-content: center; padding: 24px 28px 20px; }
+    .logo-img { height: 175px; width: auto; display: block; filter: drop-shadow(0 4px 18px rgba(192,20,42,0.35)) drop-shadow(0 2px 8px rgba(0,0,0,0.5)); transition: transform 0.2s ease; }
+    .logo-img:hover { transform: scale(1.03); }
+
+    nav { background: var(--navy-mid); border-bottom: 3px solid var(--red); }
+    .nav-inner { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; padding: 0 12px; }
+    .nav-inner a { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.8); text-decoration: none; padding: 13px 15px; transition: all 0.18s; position: relative; white-space: nowrap; }
+    .nav-inner a:hover { color: var(--red-light); background: rgba(192,20,42,0.08); }
+
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 24px 64px; }
+
+    /* HERO */
+    .hero { display: grid; grid-template-columns: 230px 1fr; gap: 28px; align-items: start; background: var(--navy); border-radius: 12px; overflow: hidden; border-left: 5px solid var(--red); }
+    .hero-initials { width: 100%; aspect-ratio: 3/4; background: var(--navy-mid); display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 84px; color: var(--red-light); }
+    .hero-body { padding: 28px 30px 28px 4px; color: #fff; }
+    .hero-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 22px; color: var(--red-light); letter-spacing: 0.05em; }
+    .hero-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(34px, 6vw, 56px); line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; margin: 2px 0 10px; }
+    .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .tag { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.06em; padding: 4px 11px; border-radius: 99px; }
+    .tag.pos { background: var(--red); color: #fff; }
+    .tag.aff { background: rgba(255,255,255,0.15); color: #fff; }
+    .hero-line { font-size: 15px; line-height: 1.65; color: rgba(255,255,255,0.85); max-width: 640px; }
+
+    /* STAT TILES */
+    .pills { display: flex; gap: 14px; flex-wrap: wrap; margin: 26px 0 4px; }
+    .pill { background: #fff; border: 1px solid var(--gray-light); border-top: 3px solid var(--red); border-radius: 8px; padding: 14px 22px; min-width: 108px; text-align: center; flex: 1 1 108px; max-width: 180px; }
+    .pill .pv { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 34px; color: var(--navy); line-height: 1; font-variant-numeric: tabular-nums; }
+    .pill .pk { font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; color: var(--gray); font-weight: 700; margin-top: 5px; }
+
+    /* RANK CHIPS */
+    .ranks { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 4px; }
+    .rank-chip { display: flex; align-items: baseline; gap: 8px; background: var(--navy); color: #fff; border-radius: 8px; padding: 10px 16px; }
+    .rank-chip .rn { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 24px; color: var(--red-light); line-height: 1; }
+    .rank-chip .rk { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; font-size: 12px; color: rgba(255,255,255,0.85); }
+    .ranks-note { font-size: 12px; color: var(--gray); margin-top: 8px; }
+
+    /* SECTIONS */
+    .stats-block { margin-top: 34px; }
+    .stats-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+    .stats-head h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; font-size: 18px; border-left: 4px solid var(--red); padding-left: 10px; }
+    .stats-head .season { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; color: var(--gray); font-size: 14px; letter-spacing: 0.05em; }
+    .stable-scroll { overflow-x: auto; border: 1px solid var(--gray-light); border-radius: 6px; background: #fff; }
+    table.stat { width: 100%; border-collapse: collapse; background: #fff; font-size: 14px; }
+    table.stat th { background: var(--navy-mid); color: rgba(255,255,255,0.7); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 12px; text-align: center; white-space: nowrap; }
+    table.stat td { padding: 10px 12px; text-align: center; white-space: nowrap; border-top: 1px solid var(--gray-light); font-variant-numeric: tabular-nums; }
+
+    .bio-text { margin-top: 14px; font-size: 15px; line-height: 1.7; color: var(--navy); max-width: 780px; }
+    .bio-text p + p { margin-top: 12px; }
+    .bio-text strong { color: var(--red); }
+    .src-note { font-size: 12px; color: var(--gray); margin-top: 20px; }
+
+    /* VIDEO */
+    #video-block video { width: 100%; max-width: 780px; border-radius: 10px; display: block; background: #000; }
+
+    footer { background: var(--navy); border-top: 4px solid var(--red); padding: 32px 28px 20px; margin-top: 40px; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 28px; margin-bottom: 24px; }
+    .footer-logo { height: 72px; width: auto; margin-bottom: 10px; border-radius: 6px; }
+    .footer-col-title { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red-light); margin-bottom: 10px; }
+    .footer-col p, .footer-col a { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.9; text-decoration: none; display: block; }
+    .footer-col a:hover { color: var(--red-light); }
+    .footer-bottom { max-width: 1100px; margin: 0 auto; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .footer-bottom p { font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.04em; }
+
+    @media (max-width: 700px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-initials { aspect-ratio: 16/8; font-size: 64px; }
+      .hero-body { padding: 22px; }
+      .footer-inner { grid-template-columns: 1fr; gap: 16px; }
+    }
+  </style>
+</head>
+<body class="lang-en">
+
+  <div class="lang-bar">
+    <button class="lang-btn" id="btn-fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <header>
+    <div class="header-inner">
+      <a href="index.html"><img src="diamantslogo.png" alt="Diamants de Québec" class="logo-img"></a>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html"><span class="fr-text">Accueil</span><span class="en-text">Home</span></a>
+      <a href="calendrier.html"><span class="fr-text">Calendrier</span><span class="en-text">Schedule</span></a>
+      <a href="classement.html"><span class="fr-text">Classement</span><span class="en-text">Standings</span></a>
+      <a href="roster.html"><span class="fr-text">Alignement</span><span class="en-text">Roster</span></a>
+      <a href="stats.html"><span class="fr-text">Statistiques</span><span class="en-text">Stats</span></a>
+      <a href="diffusion.html"><span class="fr-text">Diffusion en direct</span><span class="en-text">Live Stream</span></a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-initials">LC</div>
+      <div class="hero-body">
+        <div class="hero-num">#41 &middot; Diamants de Qu&eacute;bec</div>
+        <h1 class="hero-name">L. Chisholm</h1>
+        <div class="hero-tags">
+          <span class="tag pos"><span class="fr-text">Releveur de fin de match</span><span class="en-text">Closer</span></span>
+          <span class="tag aff"><span class="fr-text">Avant-champ</span><span class="en-text">Infielder</span></span>
+          <span class="tag aff">LBJEQ 2026</span>
+        </div>
+        <p class="hero-line">
+          <span class="fr-text">Homme de confiance en fin de match des Diamants dans la Ligue de Baseball Junior &Eacute;lite du Qu&eacute;bec — le meilleur taux de retraits au b&acirc;ton du circuit en 2026.</span>
+          <span class="en-text">The Diamants' ninth-inning arm in Qu&eacute;bec's top junior circuit — owner of the best strikeout rate in the league in 2026.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- HEADLINE STAT TILES -->
+    <div class="pills">
+      <div class="pill"><div class="pv">0.50</div><div class="pk"><span class="fr-text">MPM</span><span class="en-text">ERA</span></div></div>
+      <div class="pill"><div class="pv">0.79</div><div class="pk">WHIP</div></div>
+      <div class="pill"><div class="pv">16.7</div><div class="pk"><span class="fr-text">RET/9</span><span class="en-text">K/9</span></div></div>
+      <div class="pill"><div class="pv">47%</div><div class="pk"><span class="fr-text">% Retraits au b&acirc;ton</span><span class="en-text">K rate</span></div></div>
+      <div class="pill"><div class="pv">13.0</div><div class="pk"><span class="fr-text">RET/BB</span><span class="en-text">K/BB</span></div></div>
+      <div class="pill"><div class="pv">4</div><div class="pk"><span class="fr-text">Sauvetages</span><span class="en-text">Saves</span></div></div>
+    </div>
+
+    <!-- LEAGUE RANKS -->
+    <div class="stats-block">
+      <div class="stats-head">
+        <h2><span class="fr-text">Rangs dans la LBJEQ</span><span class="en-text">LBJEQ League Ranks</span></h2>
+        <span class="season">2026</span>
+      </div>
+      <div class="ranks">
+        <div class="rank-chip"><span class="rn">#1</span><span class="rk"><span class="fr-text">Taux de retraits au b&acirc;ton</span><span class="en-text">Strikeout rate</span></span></div>
+        <div class="rank-chip"><span class="rn">#1</span><span class="rk">K/BB</span></div>
+        <div class="rank-chip"><span class="rn">#2</span><span class="rk"><span class="fr-text">MPM</span><span class="en-text">ERA</span></span></div>
+        <div class="rank-chip"><span class="rn">#3</span><span class="rk">WHIP</span></div>
+        <div class="rank-chip"><span class="rn">#2</span><span class="rk"><span class="fr-text">Sauvetages</span><span class="en-text">Saves</span></span></div>
+      </div>
+      <p class="ranks-note">
+        <span class="fr-text">Parmi les 115 lanceurs de la ligue avec 10 manches et plus (sauvetages&nbsp;: toute la ligue). 14 &eacute;quipes.</span>
+        <span class="en-text">Among the 115 league pitchers with 10+ innings (saves: entire league). 14 teams.</span>
+      </p>
+    </div>
+
+    <!-- FULL SEASON LINE -->
+    <div class="stats-block">
+      <div class="stats-head">
+        <h2><span class="fr-text">Ligne compl&egrave;te — Lancer</span><span class="en-text">Full Season Line — Pitching</span></h2>
+        <span class="season">LBJEQ 2026</span>
+      </div>
+      <div class="stable-scroll">
+        <table class="stat">
+          <thead>
+            <tr><th>APP</th><th>GS</th><th>W</th><th>L</th><th>SV</th><th>IP</th><th>H</th><th>R</th><th>ER</th><th>HR</th><th>BB</th><th>HBP</th><th>SO</th><th>ERA</th><th>WHIP</th><th>BAA</th><th>FIP</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>11</td><td>0</td><td>1</td><td>0</td><td>4</td><td>14.0</td><td>9</td><td>1</td><td>1</td><td>0</td><td>2</td><td>2</td><td>26</td><td>0.50</td><td>0.79</td><td>.180</td><td>0.89</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- WRITE-UP -->
+    <div class="stats-block">
+      <div class="stats-head">
+        <h2><span class="fr-text">Profil</span><span class="en-text">Scouting Notes</span></h2>
+      </div>
+      <div class="bio-text">
+        <p class="en-text">
+          Chisholm is the Diamants' closer and an everyday infielder — the arm the coaching staff hands every
+          high-leverage inning. Through July 21 he has struck out <strong>26 of the 55 batters</strong> he has
+          faced (<strong>47%</strong>) while walking just two (3.6%), a <strong>13-to-1</strong> strikeout-to-walk
+          ratio that leads the league. He pounds the zone: <strong>69.6% strikes</strong> overall and
+          <strong>61.8% first-pitch strikes</strong>, with no home runs allowed.
+        </p>
+        <p class="en-text">
+          The results are not defense- or luck-driven: his batting average on balls in play is
+          <strong>.375</strong> — above the ~.300 norm, meaning contact against him has actually fallen for hits
+          more often than average — yet he has allowed <strong>one run all season</strong>, because nearly half of
+          opposing hitters never put the ball in play. His 0.89 FIP, built only on the outcomes a pitcher controls
+          (strikeouts, walks, home runs), matches the 0.50 ERA.
+        </p>
+        <p class="en-text">
+          <strong>About the league:</strong> the LBJEQ (Ligue de Baseball Junior &Eacute;lite du Qu&eacute;bec) is
+          the province's top junior circuit — a 14-team, 21U league of mostly 18-to-21-year-old, college-age
+          players, comparable in age band to a U.S. summer collegiate league. The Acad&eacute;mie de Baseball
+          Canada, the national development academy, fields its prospect team in this league, and LBJEQ players
+          regularly move on to Canadian university and U.S. NCAA/JUCO programs. Games are 7 innings; rate stats
+          above are converted to per-9 for comparison.
+        </p>
+        <p class="fr-text">
+          Chisholm est le releveur de fin de match des Diamants en plus d'&ecirc;tre un joueur d'avant-champ
+          r&eacute;gulier — le bras &agrave; qui les entra&icirc;neurs confient toutes les manches sous pression.
+          En date du 21 juillet, il a retir&eacute; au b&acirc;ton <strong>26 des 55 frappeurs</strong>
+          affront&eacute;s (<strong>47&nbsp;%</strong>) contre seulement deux buts sur balles (3,6&nbsp;%), un
+          ratio retraits/buts sur balles de <strong>13 contre 1</strong>, meilleur de la ligue. Il attaque la
+          zone&nbsp;: <strong>69,6&nbsp;% de prises</strong> et <strong>61,8&nbsp;% de premi&egrave;res prises</strong>,
+          sans aucun circuit accord&eacute;.
+        </p>
+        <p class="fr-text">
+          Les r&eacute;sultats ne tiennent ni de la d&eacute;fensive ni de la chance&nbsp;: sa moyenne sur les
+          balles en jeu (BABIP) est de <strong>,375</strong> — au-dessus de la norme d'environ ,300 — et il n'a
+          pourtant accord&eacute; qu'<strong>un seul point toute la saison</strong>, parce que pr&egrave;s d'un
+          frappeur sur deux ne met jamais la balle en jeu. Son FIP de 0,89, calcul&eacute; uniquement sur ce
+          qu'un lanceur contr&ocirc;le (retraits, buts sur balles, circuits), confirme la MPM de 0,50.
+        </p>
+        <p class="fr-text">
+          <strong>&Agrave; propos de la ligue&nbsp;:</strong> la LBJEQ (Ligue de Baseball Junior &Eacute;lite du
+          Qu&eacute;bec) est le plus haut circuit junior de la province — 14 &eacute;quipes, cat&eacute;gorie 21U,
+          compos&eacute;e majoritairement de joueurs de 18 &agrave; 21 ans d'&acirc;ge coll&eacute;gial.
+          L'Acad&eacute;mie de Baseball Canada y aligne son &eacute;quipe d'espoirs nationaux, et les joueurs de
+          la LBJEQ poursuivent r&eacute;guli&egrave;rement leur parcours dans les universit&eacute;s canadiennes
+          et les programmes NCAA/JUCO am&eacute;ricains. Les matchs sont de 7 manches&nbsp;; les statistiques par
+          9 manches ci-dessus sont converties pour comparaison.
+        </p>
+      </div>
+    </div>
+
+    <!-- VIDEO (auto-hides until assets/lchisholm.mp4 exists) -->
+    <div class="stats-block" id="video-block" hidden>
+      <div class="stats-head">
+        <h2><span class="fr-text">Vid&eacute;o</span><span class="en-text">Video</span></h2>
+      </div>
+      <video controls preload="metadata" id="lc-video">
+        <source src="assets/lchisholm.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <p class="src-note">
+      <span class="fr-text">Statistiques au 21 juillet 2026 — source&nbsp;: GameChanger (LBJEQ).</span>
+      <span class="en-text">Stats through July 21, 2026 — source: GameChanger (LBJEQ).</span>
+    </p>
+
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-col">
+        <img src="diamantslogo.png" alt="Diamants de Québec" class="footer-logo">
+        <p>Diamants de Québec<br>Québec, Canada</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Navigation</div>
+        <a href="index.html"><span class="fr-text">Accueil</span><span class="en-text">Home</span></a>
+        <a href="calendrier.html"><span class="fr-text">Calendrier</span><span class="en-text">Schedule</span></a>
+        <a href="roster.html"><span class="fr-text">Alignement</span><span class="en-text">Roster</span></a>
+        <a href="stats.html"><span class="fr-text">Statistiques</span><span class="en-text">Stats</span></a>
+        <a href="diffusion.html"><span class="fr-text">Diffusion en direct</span><span class="en-text">Live Stream</span></a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Contact</div>
+        <p>diamantsdequebec.ca</p>
+        <a href="#">Facebook</a><a href="#">YouTube</a><a href="#">Instagram</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Diamants de Québec &mdash; <span class="fr-text">Tous droits réservés.</span><span class="en-text">All rights reserved.</span></p>
+      <p class="fr-text">Conçu avec fierté à Québec, Canada</p>
+      <p class="en-text">Proudly built in Québec, Canada</p>
+    </div>
+  </footer>
+
+<script>
+  // This page defaults to EN (US-facing showcase); saved FR preference still wins.
+  (function(){ var s = localStorage.getItem('lang'); if (s === 'fr') setLang('fr'); })();
+
+  // Reveal the video section only once assets/lchisholm.mp4 exists on the server.
+  (function(){
+    var v = document.getElementById('lc-video');
+    v.addEventListener('loadedmetadata', function(){ document.getElementById('video-block').hidden = false; });
+    v.addEventListener('error', function(){ document.getElementById('video-block').hidden = true; }, true);
+  })();
+</script>
+
+</body>
+</html>
