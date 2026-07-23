@@ -57,6 +57,9 @@
     .tag.pos { background: var(--red); color: #fff; }
     .tag.aff { background: rgba(255,255,255,0.15); color: #fff; }
     .hero-line { font-size: 15px; line-height: 1.65; color: rgba(255,255,255,0.85); max-width: 640px; }
+    .bio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 14px 22px; max-width: 480px; margin-bottom: 18px; }
+    .bio-item .k { font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 700; }
+    .bio-item .v { font-size: 17px; font-weight: 600; color: #fff; margin-top: 1px; font-variant-numeric: tabular-nums; }
 
     /* STAT TILES */
     .pills { display: flex; gap: 14px; flex-wrap: wrap; margin: 26px 0 4px; }
@@ -145,9 +148,14 @@
           <span class="tag aff"><span class="fr-text">Avant-champ</span><span class="en-text">Infielder</span></span>
           <span class="tag aff">LBJEQ 2026</span>
         </div>
+        <div class="bio-grid">
+          <div class="bio-item"><div class="k"><span class="fr-text">&Acirc;ge</span><span class="en-text">Age</span></div><div class="v">17</div></div>
+          <div class="bio-item"><div class="k"><span class="fr-text">Poids</span><span class="en-text">Weight</span></div><div class="v">205 lb</div></div>
+          <div class="bio-item"><div class="k"><span class="fr-text">Finissant</span><span class="en-text">Grad Year</span></div><div class="v">2027</div></div>
+        </div>
         <p class="hero-line">
-          <span class="fr-text">Homme de confiance en fin de match des Diamants dans la Ligue de Baseball Junior &Eacute;lite du Qu&eacute;bec — le meilleur taux de retraits au b&acirc;ton du circuit en 2026.</span>
-          <span class="en-text">The Diamants' ninth-inning arm in Qu&eacute;bec's top junior circuit — owner of the best strikeout rate in the league in 2026.</span>
+          <span class="fr-text">Homme de confiance en fin de match des Diamants dans la Ligue de Baseball Junior &Eacute;lite du Qu&eacute;bec — &agrave; 17 ans, l'un des plus jeunes joueurs du circuit, et d&eacute;tenteur du meilleur taux de retraits au b&acirc;ton de la ligue en 2026.</span>
+          <span class="en-text">The Diamants' ninth-inning arm in Qu&eacute;bec's top junior circuit — at 17, one of the youngest players in the league, and owner of its best strikeout rate in 2026.</span>
         </p>
       </div>
     </div>
@@ -222,10 +230,11 @@
         <p class="en-text">
           <strong>About the league:</strong> the LBJEQ (Ligue de Baseball Junior &Eacute;lite du Qu&eacute;bec) is
           the province's top junior circuit — a 14-team, 21U league of mostly 18-to-21-year-old, college-age
-          players, comparable in age band to a U.S. summer collegiate league. The Acad&eacute;mie de Baseball
-          Canada, the national development academy, fields its prospect team in this league, and LBJEQ players
-          regularly move on to Canadian university and U.S. NCAA/JUCO programs. Games are 7 innings; rate stats
-          above are converted to per-9 for comparison.
+          players, comparable in age band to a U.S. summer collegiate league. Chisholm, a 2027 grad, is
+          <strong>17 — one of the youngest players in the league</strong> — closing games against hitters up to
+          four years older. The Acad&eacute;mie de Baseball Canada, the national development academy, fields its
+          prospect team in this league, and LBJEQ players regularly move on to Canadian university and U.S.
+          NCAA/JUCO programs. Games are 7 innings; rate stats above are converted to per-9 for comparison.
         </p>
         <p class="fr-text">
           Chisholm est le releveur de fin de match des Diamants en plus d'&ecirc;tre un joueur d'avant-champ
@@ -247,6 +256,8 @@
           <strong>&Agrave; propos de la ligue&nbsp;:</strong> la LBJEQ (Ligue de Baseball Junior &Eacute;lite du
           Qu&eacute;bec) est le plus haut circuit junior de la province — 14 &eacute;quipes, cat&eacute;gorie 21U,
           compos&eacute;e majoritairement de joueurs de 18 &agrave; 21 ans d'&acirc;ge coll&eacute;gial.
+          Chisholm, finissant 2027, a <strong>17 ans — l'un des plus jeunes joueurs de la ligue</strong> — et
+          termine les matchs contre des frappeurs qui ont jusqu'&agrave; quatre ans de plus que lui.
           L'Acad&eacute;mie de Baseball Canada y aligne son &eacute;quipe d'espoirs nationaux, et les joueurs de
           la LBJEQ poursuivent r&eacute;guli&egrave;rement leur parcours dans les universit&eacute;s canadiennes
           et les programmes NCAA/JUCO am&eacute;ricains. Les matchs sont de 7 manches&nbsp;; les statistiques par
