@@ -48,7 +48,7 @@
 
     /* HERO */
     .hero { display: grid; grid-template-columns: 230px 1fr; gap: 28px; align-items: start; background: var(--navy); border-radius: 12px; overflow: hidden; border-left: 5px solid var(--red); }
-    .hero-initials { width: 100%; aspect-ratio: 3/4; background: var(--navy-mid); display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 84px; color: var(--red-light); }
+    .hero-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: top; background: var(--navy-mid); display: block; }
     .hero-body { padding: 28px 30px 28px 4px; color: #fff; }
     .hero-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 22px; color: var(--red-light); letter-spacing: 0.05em; }
     .hero-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(34px, 6vw, 56px); line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; margin: 2px 0 10px; }
@@ -87,7 +87,9 @@
     .src-note { font-size: 12px; color: var(--gray); margin-top: 20px; }
 
     /* VIDEO */
-    #video-block video { width: 100%; max-width: 780px; border-radius: 10px; display: block; background: #000; }
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 900px; }
+    .video-item video { width: 100%; border-radius: 10px; display: block; background: #000; }
+    .video-item .vcap { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; font-size: 13px; color: var(--gray); margin-top: 8px; }
 
     footer { background: var(--navy); border-top: 4px solid var(--red); padding: 32px 28px 20px; margin-top: 40px; }
     .footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 28px; margin-bottom: 24px; }
@@ -100,7 +102,7 @@
 
     @media (max-width: 700px) {
       .hero { grid-template-columns: 1fr; }
-      .hero-initials { aspect-ratio: 16/8; font-size: 64px; }
+      .hero-photo { aspect-ratio: 1/1; }
       .hero-body { padding: 22px; }
       .footer-inner { grid-template-columns: 1fr; gap: 16px; }
     }
@@ -134,7 +136,7 @@
 
     <!-- HERO -->
     <div class="hero">
-      <div class="hero-initials">LC</div>
+      <img src="assets/lchisholm.jpg" alt="L. Chisholm" class="hero-photo">
       <div class="hero-body">
         <div class="hero-num">#41 &middot; Diamants de Qu&eacute;bec</div>
         <h1 class="hero-name">L. Chisholm</h1>
@@ -253,14 +255,25 @@
       </div>
     </div>
 
-    <!-- VIDEO (auto-hides until assets/lchisholm.mp4 exists) -->
-    <div class="stats-block" id="video-block" hidden>
+    <!-- VIDEO -->
+    <div class="stats-block" id="video-block">
       <div class="stats-head">
         <h2><span class="fr-text">Vid&eacute;o</span><span class="en-text">Video</span></h2>
       </div>
-      <video controls preload="metadata" id="lc-video">
-        <source src="assets/lchisholm.mp4" type="video/mp4">
-      </video>
+      <div class="video-grid">
+        <div class="video-item">
+          <video controls preload="metadata">
+            <source src="assets/lchisholm-90mph-k.mp4" type="video/mp4">
+          </video>
+          <div class="vcap"><span class="fr-text">Retrait au b&acirc;ton — rapide &agrave; 90 mph</span><span class="en-text">90 mph fastball — strikeout</span></div>
+        </div>
+        <div class="video-item">
+          <video controls preload="metadata">
+            <source src="assets/lchisholm-highlights-2026.mp4" type="video/mp4">
+          </video>
+          <div class="vcap"><span class="fr-text">Faits saillants 2026</span><span class="en-text">2026 Highlights</span></div>
+        </div>
+      </div>
     </div>
 
     <p class="src-note">
@@ -300,13 +313,6 @@
 <script>
   // This page defaults to EN (US-facing showcase); saved FR preference still wins.
   (function(){ var s = localStorage.getItem('lang'); if (s === 'fr') setLang('fr'); })();
-
-  // Reveal the video section only once assets/lchisholm.mp4 exists on the server.
-  (function(){
-    var v = document.getElementById('lc-video');
-    v.addEventListener('loadedmetadata', function(){ document.getElementById('video-block').hidden = false; });
-    v.addEventListener('error', function(){ document.getElementById('video-block').hidden = true; }, true);
-  })();
 </script>
 
 </body>
