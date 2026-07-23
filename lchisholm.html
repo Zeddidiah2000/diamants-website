@@ -47,9 +47,9 @@
     .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 24px 64px; }
 
     /* HERO */
-    .hero { display: grid; grid-template-columns: 230px 1fr; gap: 28px; align-items: start; background: var(--navy); border-radius: 12px; overflow: hidden; border-left: 5px solid var(--red); }
+    .hero { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 28px; align-items: start; background: var(--navy); border-radius: 12px; overflow: hidden; border-left: 5px solid var(--red); }
     .hero-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: top; background: var(--navy-mid); display: block; }
-    .hero-body { padding: 28px 30px 28px 4px; color: #fff; }
+    .hero-body { padding: 28px 30px 28px 4px; color: #fff; min-width: 0; }
     .hero-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 22px; color: var(--red-light); letter-spacing: 0.05em; }
     .hero-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(34px, 6vw, 56px); line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; margin: 2px 0 10px; }
     .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
@@ -103,10 +103,15 @@
     .footer-bottom { max-width: 1100px; margin: 0 auto; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
     .footer-bottom p { font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.04em; }
 
-    @media (max-width: 700px) {
-      .hero { grid-template-columns: 1fr; }
-      .hero-photo { aspect-ratio: 1/1; }
-      .hero-body { padding: 22px; }
+    @media (max-width: 780px) {
+      .hero { grid-template-columns: 1fr; gap: 0; }
+      .hero-photo { aspect-ratio: 16/9; object-position: 50% 20%; }
+      .hero-body { padding: 18px 20px 22px; }
+      .hero-name { font-size: clamp(30px, 9vw, 42px); }
+      .hero-num { font-size: 18px; }
+      .bio-grid { gap: 10px 18px; margin-bottom: 14px; max-width: none; }
+      .bio-item .v { font-size: 15px; }
+      .hero-line { font-size: 14px; }
       .footer-inner { grid-template-columns: 1fr; gap: 16px; }
     }
   </style>
