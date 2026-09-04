@@ -449,6 +449,10 @@
   // accompanying diamants-schedule-worker.js file.
   const SCHEDULE_WORKER_URL = 'https://diamantsched.chisholm2000.workers.dev';
 
+  // Primary schedule source — GameChanger worker (same as calendrier.html).
+  // Includes playoff games, which the static worker above does not.
+  const GC_GAMES_URL = 'https://diamants-gc-worker.chisholm2000.workers.dev/api/games';
+
   // Stream window config
   const STREAM_START_OFFSET_MIN = -15;  // start polling 15 min before game time
   const STREAM_DURATION_MIN     = 180;  // consider stream window open for 3 hrs
@@ -533,50 +537,95 @@
 
   // ─────────────────────────────────────────────────────────────────────────
   // ██  SCHEDULE LOADING
-  //  Priority: 1) localStorage (written by calendrier.html)
-  //            2) Cloudflare Worker fallback (for first-time visitors)
+  //  Priority: 1) GameChanger worker (live source of truth, incl. playoffs)
+  //            2) localStorage (written by calendrier.html — different shape)
+  //            3) static schedule worker (regular season only)
+  //  All three shapes are normalized by coerceGames() into the fields this
+  //  page uses: date / opp / oppKey / isHome / venue / time / logoUrl / dh.
   // ─────────────────────────────────────────────────────────────────────────
+  function fmtTimeFr(d) {
+    return d.getHours() + 'h' + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  function oppInitials(name) {
+    return (name || '?').replace(/[^A-Za-zÀ-ÿ]/g, '').slice(0, 3).toUpperCase();
+  }
+
+  function coerceGames(list) {
+    return list.map(g => {
+      // Raw GameChanger worker format
+      if (g.start_ts) {
+        const d = new Date(g.start_ts);
+        const isHome = g.home_away === 'home';
+        return {
+          date: g.start_ts, isHome,
+          opp: g.opponent_name || '?', oppKey: oppInitials(g.opponent_name),
+          venue: isHome ? 'Stade Canac' : '', time: fmtTimeFr(d),
+          div: '', num: '', dh: null,
+          logoUrl: g.opponent_id ? `assets/team-logos/${g.opponent_id}.png` : null,
+        };
+      }
+      // calendrier.html cache format
+      if (g.startTs && !g.date) {
+        const d = new Date(g.startTs);
+        return {
+          date: g.startTs, isHome: g.isHome,
+          opp: g.opp, oppKey: oppInitials(g.opp),
+          venue: g.isHome ? 'Stade Canac' : '', time: g.timeFr || fmtTimeFr(d),
+          div: '', num: '', dh: g.dh || null,
+          logoUrl: g.oppLogoUrl || null,
+        };
+      }
+      // Static schedule-worker format — already in the right shape
+      return g;
+    });
+  }
+
+  function applyGames(games) {
+    scheduleGames = games;
+    applyScheduleStatus(games);
+    renderScheduleList(games);
+    renderReplayGrid();
+    startPolling();
+  }
+
   async function loadSchedule() {
-    // 1. Try localStorage first (fast, no network)
+    // 1. GameChanger worker — source of truth (includes playoffs)
+    try {
+      const r = await fetch(GC_GAMES_URL);
+      if (r.ok) {
+        const j    = await r.json();
+        const list = Array.isArray(j) ? j : (j.games || []);
+        if (list.length) { applyGames(coerceGames(list)); return; }
+      }
+    } catch(e) {}
+
+    // 2. localStorage cache (written by calendrier.html)
     try {
       const raw = localStorage.getItem('diamants_schedule');
       if (raw) {
         const { ts, games } = JSON.parse(raw);
         const ONE_DAY = 24 * 60 * 60 * 1000;
         if (Date.now() - ts < ONE_DAY && Array.isArray(games) && games.length) {
-          scheduleGames = games;
-          applyScheduleStatus(games);
-          renderScheduleList(games);
-          renderReplayGrid();
-          startPolling();
+          applyGames(coerceGames(games));
           return;
         }
       }
     } catch(e) { /* localStorage unavailable or corrupt */ }
 
-    // 2. Fallback: Cloudflare Worker
+    // 3. Static schedule worker (regular season only)
     try {
       const r = await fetch(SCHEDULE_WORKER_URL);
       if (r.ok) {
         const games = await r.json();
-        if (Array.isArray(games) && games.length) {
-          scheduleGames = games;
-          // Cache it for future visits
-          try {
-            localStorage.setItem('diamants_schedule', JSON.stringify({ ts: Date.now(), games }));
-          } catch(e) {}
-          applyScheduleStatus(games);
-          renderScheduleList(games);
-          renderReplayGrid();
-          startPolling();
-          return;
-        }
+        if (Array.isArray(games) && games.length) { applyGames(coerceGames(games)); return; }
       }
     } catch(e) {}
 
-    // 3. Neither source available
+    // 4. No source available — still poll the camera so a live stream shows
     showStatus('noSchedule');
     renderReplayGrid();
+    startPolling();
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -597,6 +646,7 @@
     isLiveNow = await checkLiveStatus();
     if (isLiveNow !== wasLive || isLiveNow) {
       if (scheduleGames) applyScheduleStatus(scheduleGames);
+      else if (isLiveNow) showStatusLive(null, getLang());
     }
   }
 
