@@ -56,15 +56,39 @@ async function refreshTeams() {
 }
 const getTeams = (env) => getCached(env, 'teams', TEAMS_TTL, refreshTeams).then(c => c.data || []);
 
+// Playoff detection. LBJEQ playoff games live in a separate GC bracket org
+// (a different organization_id on the authed schedule), so they never appear in
+// the league's public events list. Every regular-season game does — including
+// makeups — so "starts after the last league-listed Diamants game" == series.
+// The last-league timestamp is kept in KV so a transient events-fetch failure
+// doesn't strip the flag for a cron tick.
+async function lastLeagueGameTs(env) {
+  const ev = await gcFetch(`/organizations/${ORG}/events`);
+  let last = 0;
+  if (Array.isArray(ev)) {
+    for (const e of ev) {
+      const ours = (e.home_team && e.home_team.id === TEAM) || (e.away_team && e.away_team.id === TEAM);
+      if (!ours) continue;
+      const t = new Date(e.start_ts || 0).getTime();
+      if (t > last) last = t;
+    }
+  }
+  if (last > 0) { try { await env.GC.put('league_last_ts', String(last)); } catch {} return last; }
+  try { const c = await env.GC.get('league_last_ts'); if (c) return Number(c) || 0; } catch {}
+  return 0;
+}
+
 async function refreshGames(env) {
   const raw = await gcFetch(`/teams/${TEAM}/games`);
   if (!Array.isArray(raw)) return null;
   const teams = await getTeams(env);
   const nameToId = {};
   for (const t of teams) if (t.name) nameToId[t.name] = t.id;
+  const leagueLast = await lastLeagueGameTs(env);
   return raw.map(g => {
     const oppName = g.opponent_team && g.opponent_team.name ? g.opponent_team.name : '';
     const s = g.score || null;
+    const ts = new Date(g.start_ts || 0).getTime();
     return {
       id:              g.id,
       start_ts:        g.start_ts || null,
@@ -77,6 +101,7 @@ async function refreshGames(env) {
       opponent_id:     nameToId[oppName] || null,
       has_live_stream: !!g.has_live_stream,
       has_videos:      !!g.has_videos_available,
+      series:          leagueLast > 0 && ts > leagueLast,
     };
   }).sort((a, b) => new Date(a.start_ts || 0) - new Date(b.start_ts || 0));
 }

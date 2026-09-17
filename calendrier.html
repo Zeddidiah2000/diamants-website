@@ -68,8 +68,9 @@
     .source-link { display: inline-flex; align-items: center; gap: 6px; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 6px 12px; border: 1px solid var(--gray-light); border-radius: 3px; background: var(--white); transition: all 0.18s; }
     .source-link:hover { color: var(--navy); border-color: var(--red); }
 
-    /* ── MONTH HEADINGS (sticky) ── */
+    /* ── MONTH HEADINGS (sticky, collapsible once every game is played) ── */
     .month-group { margin-bottom: 32px; }
+    .month-group.collapsed { margin-bottom: 14px; }
     .month-heading {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 22px; font-weight: 800;
@@ -83,6 +84,49 @@
       background: var(--off-white);
       z-index: 10;
       box-shadow: 0 4px 12px rgba(15,30,61,0.07);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .month-heading .month-label { flex: 1; min-width: 0; }
+    .month-heading .month-count {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--gray);
+      opacity: 0; transition: opacity 0.18s;
+      white-space: nowrap;
+    }
+    .month-group.collapsed .month-heading .month-count { opacity: 1; }
+    .month-heading .month-chevron {
+      display: none;
+      width: 14px; height: 14px; flex-shrink: 0;
+      margin-right: 10px;
+      transition: transform 0.18s;
+      color: var(--red);
+    }
+    .month-group.collapsible .month-heading { cursor: pointer; user-select: none; }
+    .month-group.collapsible .month-heading:hover { color: var(--navy-light); }
+    .month-group.collapsible .month-heading:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+    .month-group.collapsible .month-heading .month-chevron { display: inline-block; }
+    .month-group.collapsed .month-heading .month-chevron { transform: rotate(-90deg); }
+    .month-group.collapsed .game-list { display: none; }
+
+    /* Pinned playoff block — sits above the month groups once the regular
+       season is over. Navy heading so it reads as a different kind of section. */
+    .series-group .month-heading {
+      color: var(--white);
+      background: linear-gradient(90deg, var(--navy) 0%, var(--navy-light) 100%);
+      border-left-color: var(--red-light);
+      padding-left: 14px; padding-right: 14px;
+      box-shadow: 0 4px 14px rgba(15,30,61,0.22);
+    }
+    .series-group .month-heading .month-count { color: var(--red-light); opacity: 1; }
+    .series-tag {
+      display: inline-flex; align-items: center;
+      padding: 3px 9px; border-radius: 999px;
+      background: var(--navy); color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase;
     }
 
     /* ── GAME LIST ── */
@@ -285,8 +329,8 @@
   <div class="page-header">
     <h1 class="fr-text">Calendrier <span>des matchs</span></h1>
     <h1 class="en-text">Game <span>Schedule</span></h1>
-    <p class="page-header-sub fr-text">Saison Régulière 2026 · Source : LBJEQ via Spordle</p>
-    <p class="page-header-sub en-text">2026 Regular Season · Source: LBJEQ via Spordle</p>
+    <p class="page-header-sub fr-text">Saison 2026 · Source : GameChanger (LBJEQ)</p>
+    <p class="page-header-sub en-text">2026 Season · Source: GameChanger (LBJEQ)</p>
   </div>
 
   <div class="schedule-wrap">
@@ -330,8 +374,8 @@
     </div>
     <div class="footer-bottom">
       <p>&copy; 2026 Diamants de Québec &mdash; <span class="fr-text">Tous droits réservés.</span><span class="en-text">All rights reserved.</span></p>
-      <p class="fr-text">Données : LBJEQ via Spordle · Logos : Spordle</p>
-      <p class="en-text">Data: LBJEQ via Spordle · Logos: Spordle</p>
+      <p class="fr-text">Données : GameChanger (LBJEQ) · Logos : GameChanger</p>
+      <p class="en-text">Data: GameChanger (LBJEQ) · Logos: GameChanger</p>
     </div>
   </footer>
 
@@ -387,6 +431,7 @@
           ourScore:   g.our_score != null ? g.our_score : null,
           oppScore:   g.opp_score != null ? g.opp_score : null,
           hasLive:    !!g.has_live_stream,
+          series:     !!g.series,   // playoff game (tagged by diamants-gc-worker)
           dh:         null,
         };
       });
@@ -441,8 +486,31 @@
       } catch(e) { /* storage unavailable */ }
     }
 
+    // ── MONTH FOLDING ────────────────────────────────────────────────────────
+    // Months whose games are all played collapse by default (heading stays,
+    // click to expand). Tracks what the user opened so the 60s re-render
+    // doesn't snap it shut. Not persisted — reload restores the default.
+    const openMonths = new Set();
+    let   lastGames  = null;
+    const GAME_OVER_MS = 4 * 60 * 60 * 1000; // "a game is over by now" allowance
+
+    function currentMonthKeyET() {
+      const p = {};
+      for (const x of new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit' }).formatToParts(new Date())) p[x.type] = x.value;
+      return (p.year && p.month) ? `${p.year}-${p.month}` : '';
+    }
+    function toggleMonth(monthKey) {
+      if (openMonths.has(monthKey)) openMonths.delete(monthKey); else openMonths.add(monthKey);
+      if (lastGames) render(lastGames);
+    }
+    const monthKeyOf = g => `${g.year}-${String(g.month + 1).padStart(2, '0')}`;
+    const lastTsOf   = arr => arr.reduce((m, g) => { const t = g.startTs ? new Date(g.startTs).getTime() : 0; return t > m ? t : m; }, 0);
+    const countLabel = n => `<span class="fr-text">${n === 1 ? '1 match' : n + ' matchs'}</span><span class="en-text">${n === 1 ? '1 game' : n + ' games'}</span>`;
+    const CHEVRON    = `<svg class="month-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+
     // ── RENDER ───────────────────────────────────────────────────────────────
     function render(games) {
+      lastGames = games;
       const wrap = document.getElementById('schedule-content');
       wrap.innerHTML = '';
       if (!games.length) {
@@ -450,27 +518,75 @@
         return;
       }
 
-      let currentMonthKey = null;
-      let listDiv = null;
+      // Series hoisting: playoff games sit in their month while the regular
+      // season runs, then move to a pinned block on top once the last
+      // regular-season game has been played — the bracket is what people want.
+      const seriesGames  = games.filter(g => g.series);
+      const regularGames = games.filter(g => !g.series);
+      const seasonOver   = regularGames.length > 0 && (Date.now() - lastTsOf(regularGames)) > GAME_OVER_MS;
+      const hoistSeries  = seasonOver && seriesGames.length > 0;
+      const monthGames   = hoistSeries ? regularGames : games;
+      const currentMK    = currentMonthKeyET();
 
-      games.forEach(g => {
-        const monthKey = `${g.year}-${g.month}`;
-        if (monthKey !== currentMonthKey) {
-          currentMonthKey = monthKey;
-          const monthDiv = document.createElement('div');
-          monthDiv.className = 'month-group';
-          monthDiv.innerHTML = `<div class="month-heading fr-text">${FR_MONTHS[g.month]} ${g.year}</div><div class="month-heading en-text">${EN_MONTHS[g.month]} ${g.year}</div>`;
-          listDiv = document.createElement('div');
-          listDiv.className = 'game-list';
-          monthDiv.appendChild(listDiv);
-          wrap.appendChild(monthDiv);
+      if (hoistSeries) {
+        const grp = document.createElement('div');
+        grp.className = 'month-group series-group';
+        grp.innerHTML = `<div class="month-heading"><span class="month-label"><span class="fr-text">Séries éliminatoires 2026</span><span class="en-text">2026 Playoffs</span></span><span class="month-count">${countLabel(seriesGames.length)}</span></div>`;
+        const list = document.createElement('div');
+        list.className = 'game-list';
+        seriesGames.forEach(g => list.appendChild(gameItem(g)));
+        grp.appendChild(list);
+        wrap.appendChild(grp);
+      }
+
+      // Group by month (games arrive sorted by start_ts)
+      const months = [];
+      monthGames.forEach(g => {
+        const k = monthKeyOf(g);
+        let m = months[months.length - 1];
+        if (!m || m.key !== k) { m = { key: k, month: g.month, year: g.year, games: [] }; months.push(m); }
+        m.games.push(g);
+      });
+
+      months.forEach(m => {
+        // Collapsible (and collapsed by default) once every game in the month
+        // is over — including the current month. A month with a live or
+        // upcoming game stays open.
+        const isPast        = currentMK && m.key < currentMK;
+        const isSpent       = (Date.now() - lastTsOf(m.games)) > GAME_OVER_MS;
+        const isCollapsible = !!(isPast || isSpent);
+        const isCollapsed   = isCollapsible && !openMonths.has(m.key);
+
+        const grp = document.createElement('div');
+        grp.className = 'month-group' + (isCollapsible ? ' collapsible' : '') + (isCollapsed ? ' collapsed' : '');
+        grp.dataset.monthKey = m.key;
+        const head = document.createElement('div');
+        head.className = 'month-heading';
+        head.innerHTML = `<span class="month-label"><span class="fr-text">${FR_MONTHS[m.month]} ${m.year}</span><span class="en-text">${EN_MONTHS[m.month]} ${m.year}</span></span><span class="month-count">${countLabel(m.games.length)}</span>${CHEVRON}`;
+        if (isCollapsible) {
+          head.setAttribute('role', 'button');
+          head.setAttribute('tabindex', '0');
+          head.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+          head.addEventListener('click', () => toggleMonth(m.key));
+          head.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMonth(m.key); } });
         }
+        grp.appendChild(head);
+        const list = document.createElement('div');
+        list.className = 'game-list';
+        m.games.forEach(g => list.appendChild(gameItem(g)));
+        grp.appendChild(list);
+        wrap.appendChild(grp);
+      });
+    }
 
+    // One schedule row. Shared by the month groups and the pinned playoff block.
+    function gameItem(g) {
         const item = document.createElement('div');
         item.className = `game-item ${g.isHome ? 'home' : 'away'}`;
         const oppInitials = (g.opp || '?').replace(/[^A-Za-zÀ-ÿ]/g, '').slice(0, 3).toUpperCase();
         const dhFr = g.dh ? `<span class="badge badge-dh fr-text">DH — ${g.dh === '1' ? '1re' : '2e'}</span>` : '';
         const dhEn = g.dh ? `<span class="badge badge-dh en-text">DH — G${g.dh}</span>` : '';
+        const seriesTag = g.series ? `<span class="series-tag"><span class="fr-text">Séries</span><span class="en-text">Playoff</span></span>` : '';
 
         item.innerHTML = `
           <div class="game-date-block">
@@ -490,15 +606,14 @@
           </div>
           <div class="game-info">
             <div class="game-matchup">${OUR_TEAM_NAME} <span class="${g.isHome ? 'vs' : 'at'}">${g.isHome ? 'vs' : '@'}</span> ${g.opp}</div>
-            <div class="game-meta">${metaHtml(g)}</div>
+            <div class="game-meta">${metaHtml(g)}${seriesTag}</div>
           </div>
           <div class="game-badge-wrap">
             <span class="badge ${g.isHome ? 'badge-home' : 'badge-away'} fr-text">${g.isHome ? 'Domicile' : 'Extérieur'}</span>
             <span class="badge ${g.isHome ? 'badge-home' : 'badge-away'} en-text">${g.isHome ? 'Home' : 'Away'}</span>
             ${dhFr}${dhEn}
           </div>`;
-        listDiv.appendChild(item);
-      });
+        return item;
     }
 
     function showLoading() {
